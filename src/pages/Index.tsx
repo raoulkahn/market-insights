@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import CompetitiveAnalysisCard from "@/components/CareerSuggestionCard";
@@ -21,7 +20,39 @@ const Index = () => {
       keyFeatures: string[];
     };
   }>>([]);
-  const { toast } = useToast();
+
+  const spotifyExample = [
+    {
+      title: "Music Streaming Platform Market Analysis",
+      description: "Spotify operates in the highly competitive music streaming industry, where it has established itself as the global market leader. The company's success is driven by its strong recommendation algorithms, user-friendly interface, and extensive music library.",
+      marketData: {
+        targetUsers: ["Music Enthusiasts", "Casual Listeners", "Artists", "Podcast Creators", "Students"],
+        marketSize: "Global music streaming market valued at $29.45 billion in 2023, expected to grow at 14.7% CAGR",
+        entryBarriers: ["Music Licensing Costs", "Content Relationships", "Technical Infrastructure", "Network Effects"],
+        keyFeatures: ["Personalized Playlists", "Offline Mode", "Social Sharing", "Multi-platform Support", "Podcast Integration"]
+      }
+    },
+    {
+      title: "Competitive Landscape Analysis",
+      description: "While Spotify leads the global market, it faces strong competition from tech giants like Apple Music, Amazon Music, and YouTube Music. Each competitor leverages their existing ecosystems and hardware integration advantages.",
+      marketData: {
+        targetUsers: ["Premium Subscribers", "Free Tier Users", "Record Labels", "Independent Artists"],
+        marketSize: "Spotify commands approximately 30% of the global streaming market share",
+        entryBarriers: ["Brand Recognition", "User Data & Algorithms", "Industry Partnerships"],
+        keyFeatures: ["HiFi Audio Quality", "Collaborative Playlists", "Artist Analytics", "Cross-platform Sync"]
+      }
+    },
+    {
+      title: "Growth Opportunities Assessment",
+      description: "Spotify continues to expand beyond music into podcasts, audiobooks, and live audio experiences. The company is also focusing on emerging markets and creator tools to maintain its competitive edge.",
+      marketData: {
+        targetUsers: ["Content Creators", "Advertisers", "Premium Family Users", "Car Users"],
+        marketSize: "Potential to reach 1 billion users by 2030 across all audio formats",
+        entryBarriers: ["Content Production Costs", "Creator Relationships", "Ad Technology"],
+        keyFeatures: ["Creator Tools", "Ad Targeting", "Live Audio Rooms", "Car Mode"]
+      }
+    }
+  ];
 
   const trackAnalysis = async (startTime: number) => {
     try {
@@ -273,15 +304,39 @@ const Index = () => {
         </form>
 
         {!analysis.length && !isLoading && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-center text-gray-500 mb-8"
-          >
-            <Lightbulb className="mx-auto mb-4 text-blue-400" size={32} />
-            <p>Enter a company name above to get started with the market analysis</p>
-          </motion.div>
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-center text-gray-500 mb-8"
+            >
+              <Lightbulb className="mx-auto mb-4 text-blue-400" size={32} />
+              <p>Enter a company name above to get started with the market analysis</p>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="mt-16 space-y-4"
+            >
+              <div className="text-center mb-8">
+                <span className="px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-medium">
+                  Example Analysis: Spotify
+                </span>
+              </div>
+              {spotifyExample.map((item, index) => (
+                <CompetitiveAnalysisCard
+                  key={index}
+                  index={index}
+                  title={item.title}
+                  description={item.description}
+                  marketData={item.marketData}
+                />
+              ))}
+            </motion.div>
+          </>
         )}
 
         <div className="space-y-6">
@@ -315,7 +370,7 @@ const Index = () => {
             </motion.div>
           )}
           
-          {Array.isArray(analysis) && analysis.map((item, index) => (
+          {analysis.length > 0 && analysis.map((item, index) => (
             <CompetitiveAnalysisCard
               key={index}
               index={index}
