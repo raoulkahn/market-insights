@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { motion } from "framer-motion";
 import CompetitiveAnalysisCard from "@/components/CareerSuggestionCard";
@@ -42,11 +43,13 @@ const Index = () => {
         body: JSON.stringify({ companyName }),
       });
 
+      const data = await response.json();
+      
       if (!response.ok) {
-        throw new Error('Failed to analyze market');
+        console.error('Error response:', data);
+        throw new Error(data.error || 'Failed to analyze market');
       }
 
-      const data = await response.json();
       setAnalysis(data.analysis);
       
       toast({
@@ -54,11 +57,12 @@ const Index = () => {
         description: "Market analysis has been generated successfully.",
       });
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Detailed error:', error);
       toast({
         title: "Error",
-        description: "Failed to generate market analysis. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to generate market analysis. Please try again.",
         variant: "destructive",
+        duration: 5000, // Keep the error visible longer
       });
     } finally {
       setIsLoading(false);
