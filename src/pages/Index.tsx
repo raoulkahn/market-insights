@@ -6,7 +6,7 @@ import LoadingDots from "@/components/LoadingDots";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
-import { Download } from "lucide-react";
+import { Download, Search, Lightbulb } from "lucide-react";
 
 const Index = () => {
   const [companyName, setCompanyName] = useState("");
@@ -158,7 +158,12 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-soft-gray to-white flex flex-col">
+    <motion.div 
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen bg-gradient-to-b from-soft-gray to-white flex flex-col"
+    >
       <div className="container max-w-4xl px-4 py-16 mx-auto flex-grow">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -167,12 +172,18 @@ const Index = () => {
           className="text-center space-y-4 mb-12"
         >
           <div className="flex items-center justify-center gap-6">
-            <div className="px-4 py-1.5 text-sm font-medium text-gray-800 bg-gray-100 rounded-full">
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              className="px-4 py-1.5 text-sm font-medium text-gray-800 bg-gray-100 rounded-full"
+            >
               Market Analysis Tool
-            </div>
-            <div className="text-sm font-semibold text-purple-600">
+            </motion.div>
+            <motion.div 
+              whileHover={{ scale: 1.05 }}
+              className="text-sm font-semibold text-purple-600"
+            >
               Powered by OpenAI
-            </div>
+            </motion.div>
           </div>
           <h1 className="text-4xl font-semibold text-gray-900 mb-4">
             Competitive Market Analysis
@@ -184,38 +195,67 @@ const Index = () => {
         </motion.div>
 
         <form onSubmit={handleSubmit} className="max-w-xl mx-auto mb-16">
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 sm:relative">
-            <input
-              type="text"
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              placeholder="Enter a company name (e.g., Strava)..."
-              className="w-full px-6 py-4 text-lg bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-gray-200 transition-all duration-200"
-              disabled={isLoading}
-            />
-            <button
+          <motion.div 
+            className="flex flex-col sm:flex-row gap-2 sm:gap-0 sm:relative"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+          >
+            <div className="relative w-full">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
+              <input
+                type="text"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                placeholder="Enter a company name (e.g., Strava)..."
+                className="w-full pl-12 pr-6 py-4 text-lg bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-all duration-200"
+                disabled={isLoading}
+              />
+            </div>
+            <motion.button
               type="submit"
               disabled={isLoading}
-              className="sm:absolute sm:right-3 sm:top-1/2 sm:-translate-y-1/2 px-6 py-2 bg-gray-900 text-white rounded-lg transition-all duration-200 hover:bg-gray-800 disabled:opacity-50"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              className="sm:absolute sm:right-3 sm:top-1/2 sm:-translate-y-1/2 px-6 py-2 bg-gray-900 text-white rounded-lg transition-all duration-200 hover:bg-gray-800 disabled:opacity-50 hover:shadow-lg"
             >
               Analyze
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
         </form>
+
+        {!analysis.length && !isLoading && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-center text-gray-500 mb-8"
+          >
+            <Lightbulb className="mx-auto mb-4 text-purple-400" size={32} />
+            <p>Enter a company name above to get started with the market analysis</p>
+          </motion.div>
+        )}
 
         <div className="space-y-6">
           {isLoading && <LoadingDots />}
           
           {analysis.length > 0 && (
-            <div className="flex justify-center mb-8">
-              <button
+            <motion.div 
+              className="flex justify-center mb-8"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <motion.button
                 onClick={downloadPDF}
-                className="flex items-center gap-2 px-6 py-3 text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 transition-colors"
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 px-6 py-3 text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 transition-colors hover:shadow-lg"
               >
                 <Download size={20} />
                 Download PDF Report
-              </button>
-            </div>
+              </motion.button>
+            </motion.div>
           )}
           
           {Array.isArray(analysis) && analysis.map((item, index) => (
@@ -230,10 +270,15 @@ const Index = () => {
         </div>
       </div>
       
-      <footer className="py-4 text-center text-sm text-gray-500 bg-gray-50">
+      <motion.footer 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="py-4 text-center text-sm text-gray-500 bg-gray-50"
+      >
         Created by Raoul Kahn
-      </footer>
-    </div>
+      </motion.footer>
+    </motion.div>
   );
 };
 
