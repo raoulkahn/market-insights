@@ -311,15 +311,6 @@ const Index = () => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="text-center text-gray-500 mb-8"
-            >
-              <p>Enter a company name above to get started with the market analysis</p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
               className="mt-16 space-y-4"
             >
               <div className="text-center mb-8">
