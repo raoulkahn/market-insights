@@ -8,7 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 const Index = () => {
   const [profession, setProfession] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [suggestions, setSuggestions] = useState<Array<{ title: string; description: string }>>([]);
+  const [suggestions, setSuggestions] = useState<Array<{ title: string; description: string; skills: string[] }>>([]);
   const { toast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,14 +31,17 @@ const Index = () => {
         {
           title: "UX/UI Designer",
           description: "Apply your understanding of user needs and problem-solving skills to create intuitive digital experiences.",
+          skills: ["Problem Solving", "User Empathy", "Critical Thinking", "Communication"],
         },
         {
           title: "Product Manager",
           description: "Leverage your domain expertise to guide product development and strategy.",
+          skills: ["Leadership", "Strategic Thinking", "Analysis", "Stakeholder Management"],
         },
         {
           title: "Business Analyst",
           description: "Use your analytical skills and industry knowledge to drive business improvements.",
+          skills: ["Data Analysis", "Process Optimization", "Research", "Documentation"],
         },
       ];
 
@@ -69,7 +72,7 @@ const Index = () => {
         </motion.div>
 
         <form onSubmit={handleSubmit} className="max-w-xl mx-auto mb-16">
-          <div className="relative">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-0 sm:relative">
             <input
               type="text"
               value={profession}
@@ -81,7 +84,7 @@ const Index = () => {
             <button
               type="submit"
               disabled={isLoading}
-              className="absolute right-3 top-1/2 -translate-y-1/2 px-6 py-2 bg-gray-900 text-white rounded-lg transition-all duration-200 hover:bg-gray-800 disabled:opacity-50"
+              className="sm:absolute sm:right-3 sm:top-1/2 sm:-translate-y-1/2 px-6 py-2 bg-gray-900 text-white rounded-lg transition-all duration-200 hover:bg-gray-800 disabled:opacity-50"
             >
               Explore
             </button>
@@ -97,6 +100,7 @@ const Index = () => {
               index={index}
               title={suggestion.title}
               description={suggestion.description}
+              skills={suggestion.skills}
             />
           ))}
         </div>
