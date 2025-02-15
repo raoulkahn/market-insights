@@ -49,13 +49,20 @@ Format the response as a JSON object with this structure:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: 'You are a market research analyst specializing in competitive analysis.' },
           { role: 'user', content: prompt }
         ],
+        temperature: 0.7,
       }),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('OpenAI API Error:', errorData);
+      throw new Error(errorData.error?.message || 'Failed to get response from OpenAI');
+    }
 
     const data = await response.json();
     const analysisText = data.choices[0].message.content;
