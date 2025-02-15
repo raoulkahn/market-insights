@@ -324,7 +324,7 @@ const Index = () => {
           </p>
         </motion.div>
 
-        <form onSubmit={handleSubmit} className="max-w-xl mx-auto mb-8">
+        <form onSubmit={handleSubmit} className="max-w-xl mx-auto mb-16">
           <motion.div 
             className="relative flex items-center"
             initial={{ scale: 0.95, opacity: 0 }}
@@ -353,18 +353,6 @@ const Index = () => {
             </motion.button>
           </motion.div>
         </form>
-
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3, duration: 0.5 }}
-          className="max-w-xl mx-auto mb-16 p-4 bg-yellow-50 border border-yellow-100 rounded-lg"
-        >
-          <p className="text-sm text-yellow-800 text-center">
-            Note: Analysis is based on AI-generated data which may not reflect the most current market conditions. 
-            Please verify critical information from additional sources before making business decisions.
-          </p>
-        </motion.div>
 
         {!analysis.length && !isLoading && (
           <>
@@ -452,6 +440,20 @@ const Index = () => {
           )}
         </div>
       </div>
+      
+      {analysis.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="py-4 text-sm text-yellow-800 bg-yellow-50 border-t border-yellow-100 text-center"
+        >
+          <p className="max-w-2xl mx-auto px-4">
+            Note: Analysis is based on AI-generated data which may not reflect the most current market conditions. 
+            Please verify critical information from additional sources before making business decisions.
+          </p>
+        </motion.div>
+      )}
       
       <motion.footer 
         initial={{ opacity: 0 }}
