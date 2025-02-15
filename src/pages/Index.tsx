@@ -336,7 +336,7 @@ const Index = () => {
                 type="text"
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
-                placeholder={!companyName ? "Enter a company name (e.g., OpenAI) ..." : ""}
+                placeholder={!companyName ? "Enter company (e.g., OpenAI)" : ""}
                 className="w-full pl-12 pr-6 py-4 text-lg bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
                 disabled={isLoading}
               />
