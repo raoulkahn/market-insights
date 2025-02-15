@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import CompetitiveAnalysisCard from "@/components/CareerSuggestionCard";
 import LoadingDots from "@/components/LoadingDots";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
   const [companyName, setCompanyName] = useState("");
@@ -35,19 +36,13 @@ const Index = () => {
     setAnalysis([]);
 
     try {
-      const response = await fetch('https://lovable-ai-edmsrslmcv.lovableai.workers.dev/analyze-market', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ companyName }),
+      const { data, error } = await supabase.functions.invoke('analyze-market', {
+        body: { companyName }
       });
-
-      const data = await response.json();
       
-      if (!response.ok) {
-        console.error('Error response:', data);
-        throw new Error(data.error || 'Failed to analyze market');
+      if (error) {
+        console.error('Error response:', error);
+        throw new Error(error.message || 'Failed to analyze market');
       }
 
       setAnalysis(data.analysis);
@@ -62,7 +57,7 @@ const Index = () => {
         title: "Error",
         description: error instanceof Error ? error.message : "Failed to generate market analysis. Please try again.",
         variant: "destructive",
-        duration: 5000, // Keep the error visible longer
+        duration: 5000,
       });
     } finally {
       setIsLoading(false);
