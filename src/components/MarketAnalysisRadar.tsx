@@ -53,9 +53,9 @@ const MarketAnalysisRadar = ({ marketData, index }: MarketAnalysisRadarProps) =>
       <p className="text-sm text-gray-600 mb-4">
         Higher scores (0-100) indicate stronger market position and competitive advantage
       </p>
-      <div className="h-[300px] w-full pt-8">
+      <div className="h-[350px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={barData} margin={{ top: 20, right: 60, left: 70, bottom: 80 }}>
+          <BarChart data={barData} margin={{ top: 40, right: 60, left: 70, bottom: 80 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis 
               dataKey="metric" 
