@@ -166,13 +166,13 @@ const Index = () => {
           transition={{ duration: 0.5 }}
           className="text-center space-y-4 mb-12"
         >
-          <div className="flex items-center justify-center space-x-3">
-            <div className="px-4 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-full">
+          <div className="flex items-center justify-center gap-6">
+            <div className="px-4 py-1.5 text-sm font-medium text-gray-800 bg-gray-100 rounded-full">
               Market Analysis Tool
             </div>
-            <span className="text-sm font-medium" style={{ color: '#8B5CF6' }}>
+            <div className="text-sm font-semibold text-purple-600">
               Powered by OpenAI
-            </span>
+            </div>
           </div>
           <h1 className="text-4xl font-semibold text-gray-900 mb-4">
             Competitive Market Analysis
@@ -207,12 +207,12 @@ const Index = () => {
           {isLoading && <LoadingDots />}
           
           {analysis.length > 0 && (
-            <div className="flex justify-end mb-4">
+            <div className="flex justify-center mb-8">
               <button
                 onClick={downloadPDF}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
+                className="flex items-center gap-2 px-6 py-3 text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 transition-colors"
               >
-                <Download size={16} />
+                <Download size={20} />
                 Download PDF Report
               </button>
             </div>
