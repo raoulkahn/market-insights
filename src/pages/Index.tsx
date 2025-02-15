@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import CompetitiveAnalysisCard from "@/components/CareerSuggestionCard";
+import MarketAnalysisCard from "@/components/MarketAnalysisCard";
 import MarketAnalysisRadar from "@/components/MarketAnalysisRadar";
 import LoadingDots from "@/components/LoadingDots";
 import { useToast } from "@/hooks/use-toast";
@@ -320,7 +320,7 @@ const Index = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {spotifyExample.map((item, index) => (
-                  <CompetitiveAnalysisCard
+                  <MarketAnalysisCard
                     key={index}
                     index={index}
                     title={item.title}
@@ -373,7 +373,7 @@ const Index = () => {
           {analysis.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {analysis.map((item, index) => (
-                <CompetitiveAnalysisCard
+                <MarketAnalysisCard
                   key={index}
                   index={index}
                   title={item.title}
