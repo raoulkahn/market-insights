@@ -47,10 +47,9 @@ Format the response as a JSON object with this structure:
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
-        'OpenAI-Organization': 'Default project', // Add organization header
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini', // Switch back to gpt-4o-mini which supports project-based keys
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: 'You are a market research analyst specializing in competitive analysis.' },
           { role: 'user', content: prompt }
