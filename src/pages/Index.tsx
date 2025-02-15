@@ -145,7 +145,7 @@ const Index = () => {
     let yPosition = 20;
     const pageWidth = pdf.internal.pageSize.getWidth();
     const margin = 20;
-    const contentWidth = pageWidth - 2 * margin;
+    const maxWidth = pageWidth - (2 * margin); // Available width for content
 
     // Title
     pdf.setFontSize(20);
@@ -154,7 +154,8 @@ const Index = () => {
 
     // Company name
     pdf.setFontSize(16);
-    pdf.text(`Analysis for: ${companyName}`, margin, yPosition);
+    const companyTitle = `Analysis for: ${companyName}`;
+    pdf.text(companyTitle, margin, yPosition);
     yPosition += 15;
 
     analysis.forEach((item, index) => {
@@ -173,9 +174,9 @@ const Index = () => {
       // Description
       pdf.setFontSize(12);
       pdf.setFont(undefined, "normal");
-      const descriptionLines = pdf.splitTextToSize(item.description, contentWidth);
+      const descriptionLines = pdf.splitTextToSize(item.description, maxWidth);
       pdf.text(descriptionLines, margin, yPosition);
-      yPosition += 10 * descriptionLines.length;
+      yPosition += (7 * descriptionLines.length);
 
       // Market Data
       if (item.marketData) {
@@ -184,32 +185,39 @@ const Index = () => {
         pdf.text("Target Users:", margin, yPosition);
         yPosition += 7;
         pdf.setFont(undefined, "normal");
-        pdf.text(item.marketData.targetUsers.join(", "), margin, yPosition);
-        yPosition += 10;
+        const targetUsersText = item.marketData.targetUsers.join(", ");
+        const targetUsersLines = pdf.splitTextToSize(targetUsersText, maxWidth);
+        pdf.text(targetUsersLines, margin, yPosition);
+        yPosition += (7 * targetUsersLines.length);
 
         // Market Size
         pdf.setFont(undefined, "bold");
         pdf.text("Market Size:", margin, yPosition);
         yPosition += 7;
         pdf.setFont(undefined, "normal");
-        pdf.text(item.marketData.marketSize, margin, yPosition);
-        yPosition += 10;
+        const marketSizeLines = pdf.splitTextToSize(item.marketData.marketSize, maxWidth);
+        pdf.text(marketSizeLines, margin, yPosition);
+        yPosition += (7 * marketSizeLines.length);
 
         // Entry Barriers
         pdf.setFont(undefined, "bold");
         pdf.text("Entry Barriers:", margin, yPosition);
         yPosition += 7;
         pdf.setFont(undefined, "normal");
-        pdf.text(item.marketData.entryBarriers.join(", "), margin, yPosition);
-        yPosition += 10;
+        const barriersText = item.marketData.entryBarriers.join(", ");
+        const barriersLines = pdf.splitTextToSize(barriersText, maxWidth);
+        pdf.text(barriersLines, margin, yPosition);
+        yPosition += (7 * barriersLines.length);
 
         // Key Features
         pdf.setFont(undefined, "bold");
         pdf.text("Required Features:", margin, yPosition);
         yPosition += 7;
         pdf.setFont(undefined, "normal");
-        pdf.text(item.marketData.keyFeatures.join(", "), margin, yPosition);
-        yPosition += 20;
+        const featuresText = item.marketData.keyFeatures.join(", ");
+        const featuresLines = pdf.splitTextToSize(featuresText, maxWidth);
+        pdf.text(featuresLines, margin, yPosition);
+        yPosition += (7 * featuresLines.length + 10);
       }
     });
 
