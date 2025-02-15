@@ -304,9 +304,14 @@ const Index = () => {
           <div className="flex items-center justify-center">
             <motion.div 
               whileHover={{ scale: 1.05 }}
-              className="text-base font-semibold text-blue-600"
+              className="flex items-center gap-2 text-base font-semibold text-gray-800"
             >
-              Powered by OpenAI
+              <img
+                src="https://cdn.worldvectorlogo.com/logos/openai-2.svg"
+                alt="OpenAI Logo"
+                className="w-5 h-5"
+              />
+              <span className="text-blue-600">Powered by OpenAI</span>
             </motion.div>
           </div>
           <h1 className="text-4xl font-semibold text-gray-900 mb-4">
