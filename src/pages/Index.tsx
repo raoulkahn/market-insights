@@ -69,16 +69,19 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-soft-gray to-white">
-      <div className="container max-w-4xl px-4 py-16 mx-auto">
+    <div className="min-h-screen bg-gradient-to-b from-soft-gray to-white flex flex-col">
+      <div className="container max-w-4xl px-4 py-16 mx-auto flex-grow">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="text-center space-y-4 mb-12"
         >
-          <div className="inline-block px-4 py-1.5 mb-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-full">
-            Market Analysis Tool
+          <div className="flex items-center justify-center gap-2">
+            <div className="inline-block px-4 py-1.5 mb-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-full">
+              Market Analysis Tool
+            </div>
+            <span className="text-sm text-gray-500">Powered by OpenAI</span>
           </div>
           <h1 className="text-4xl font-semibold text-gray-900 mb-4">
             Competitive Market Analysis
@@ -123,9 +126,12 @@ const Index = () => {
           ))}
         </div>
       </div>
+      
+      <footer className="py-4 text-center text-sm text-gray-500 bg-gray-50">
+        Created by Your Name {/* Replace "Your Name" with your actual name */}
+      </footer>
     </div>
   );
 };
 
 export default Index;
-
