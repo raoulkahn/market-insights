@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import CompetitiveAnalysisCard from "@/components/CareerSuggestionCard";
@@ -6,7 +5,7 @@ import LoadingDots from "@/components/LoadingDots";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
-import { Download, Search, Lightbulb } from "lucide-react";
+import { Download, Search, Lightbulb, RefreshCw } from "lucide-react";
 
 const Index = () => {
   const [companyName, setCompanyName] = useState("");
@@ -157,6 +156,15 @@ const Index = () => {
     });
   };
 
+  const handleReset = () => {
+    setCompanyName("");
+    setAnalysis([]);
+    toast({
+      title: "Analysis Reset",
+      description: "You can now analyze a different company.",
+    });
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -241,7 +249,7 @@ const Index = () => {
           
           {analysis.length > 0 && (
             <motion.div 
-              className="flex justify-center mb-8"
+              className="flex justify-center gap-4 mb-8"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -254,6 +262,15 @@ const Index = () => {
               >
                 <Download size={20} />
                 Download PDF Report
+              </motion.button>
+              <motion.button
+                onClick={handleReset}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                className="flex items-center gap-2 px-6 py-3 text-base font-semibold text-gray-700 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors hover:shadow-lg"
+              >
+                <RefreshCw size={20} />
+                New Analysis
               </motion.button>
             </motion.div>
           )}
