@@ -23,7 +23,7 @@ const MarketAnalysisCard = ({ index, title, description, marketData }: Competiti
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
     >
-      <Card className="h-full bg-[#F1F0FB] border-none shadow-sm">
+      <Card className="h-full bg-gray-100 border-none shadow-md">
         <CardHeader className="pb-2">
           <h3 className="text-xl font-semibold text-gray-900">{title}</h3>
           <p className="text-sm text-gray-600">{description}</p>
