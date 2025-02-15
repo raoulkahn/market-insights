@@ -5,7 +5,7 @@ import LoadingDots from "@/components/LoadingDots";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
-import { Download, Search, Lightbulb, RefreshCw, ChartLineUp } from "lucide-react";
+import { Download, Search, Lightbulb, RefreshCw, ChartLine } from "lucide-react";
 import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 
 const Index = () => {
@@ -281,7 +281,7 @@ const Index = () => {
             whileTap={{ scale: 0.95 }}
             className="mx-auto mt-4 flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
           >
-            <ChartLineUp size={20} />
+            <ChartLine size={20} />
             {showAnalytics ? 'Hide Analytics' : 'Show Analytics'}
           </motion.button>
         </motion.div>
