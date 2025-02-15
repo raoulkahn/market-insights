@@ -9,10 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      analytics: {
+        Row: {
+          analysis_count: number | null
+          company_name: string
+          created_at: string
+          id: string
+          pdf_downloaded: boolean | null
+          response_time_ms: number | null
+          status: string | null
+        }
+        Insert: {
+          analysis_count?: number | null
+          company_name: string
+          created_at?: string
+          id?: string
+          pdf_downloaded?: boolean | null
+          response_time_ms?: number | null
+          status?: string | null
+        }
+        Update: {
+          analysis_count?: number | null
+          company_name?: string
+          created_at?: string
+          id?: string
+          pdf_downloaded?: boolean | null
+          response_time_ms?: number | null
+          status?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
-      [_ in never]: never
+      analytics_summary: {
+        Row: {
+          avg_response_time: number | null
+          date: string | null
+          total_analyses: number | null
+          total_downloads: number | null
+          unique_companies: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

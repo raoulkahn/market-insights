@@ -1,15 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import CompetitiveAnalysisCard from "@/components/CareerSuggestionCard";
 import LoadingDots from "@/components/LoadingDots";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
-import { Download, Search, Lightbulb, RefreshCw } from "lucide-react";
+import { Download, Search, Lightbulb, RefreshCw, ChartLineUp } from "lucide-react";
+import AnalyticsDashboard from "@/components/AnalyticsDashboard";
 
 const Index = () => {
   const [companyName, setCompanyName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [analyticsData, setAnalyticsData] = useState([]);
   const [analysis, setAnalysis] = useState<Array<{
     title: string;
     description: string;
@@ -21,6 +24,66 @@ const Index = () => {
     };
   }>>([]);
   const { toast } = useToast();
+
+  const fetchAnalytics = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('analytics_summary')
+        .select('*')
+        .limit(30);
+      
+      if (error) throw error;
+      setAnalyticsData(data || []);
+    } catch (error) {
+      console.error('Error fetching analytics:', error);
+      toast({
+        title: "Error loading analytics",
+        description: "Failed to load analytics data. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (showAnalytics) {
+      fetchAnalytics();
+    }
+  }, [showAnalytics]);
+
+  const trackAnalysis = async (startTime: number) => {
+    try {
+      const endTime = Date.now();
+      const responseTime = endTime - startTime;
+      
+      await supabase.from('analytics').insert([{
+        company_name: companyName,
+        response_time_ms: responseTime,
+        status: 'completed'
+      }]);
+    } catch (error) {
+      console.error('Error tracking analytics:', error);
+    }
+  };
+
+  const updateDownloadStatus = async () => {
+    try {
+      const { data } = await supabase
+        .from('analytics')
+        .select('id')
+        .eq('company_name', companyName)
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (data && data[0]) {
+        await supabase
+          .from('analytics')
+          .update({ pdf_downloaded: true })
+          .eq('id', data[0].id);
+      }
+    } catch (error) {
+      console.error('Error updating download status:', error);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,6 +98,7 @@ const Index = () => {
 
     setIsLoading(true);
     setAnalysis([]);
+    const startTime = Date.now();
 
     try {
       const { data, error } = await supabase.functions.invoke('analyze-market', {
@@ -51,6 +115,7 @@ const Index = () => {
       }
 
       setAnalysis(data.analysis);
+      await trackAnalysis(startTime);
       
       toast({
         title: "Analysis Complete",
@@ -69,7 +134,7 @@ const Index = () => {
     }
   };
 
-  const downloadPDF = () => {
+  const downloadPDF = async () => {
     const pdf = new jsPDF();
     let yPosition = 20;
     const pageWidth = pdf.internal.pageSize.getWidth();
@@ -150,6 +215,8 @@ const Index = () => {
     // Save the PDF
     pdf.save(`market-analysis-${companyName.toLowerCase().replace(/\s+/g, "-")}.pdf`);
 
+    await updateDownloadStatus();
+
     toast({
       title: "PDF Downloaded",
       description: "Your market analysis report has been downloaded successfully.",
@@ -163,6 +230,13 @@ const Index = () => {
       title: "Analysis Reset",
       description: "You can now analyze a different company.",
     });
+  };
+
+  const toggleAnalytics = () => {
+    setShowAnalytics(!showAnalytics);
+    if (!showAnalytics) {
+      fetchAnalytics();
+    }
   };
 
   return (
@@ -200,7 +274,19 @@ const Index = () => {
             Enter a company name to analyze the market landscape, competition, and potential opportunities
             in their space. Get insights on market size, target users, and required features.
           </p>
+          
+          <motion.button
+            onClick={toggleAnalytics}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="mx-auto mt-4 flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+          >
+            <ChartLineUp size={20} />
+            {showAnalytics ? 'Hide Analytics' : 'Show Analytics'}
+          </motion.button>
         </motion.div>
+
+        <AnalyticsDashboard data={analyticsData} isVisible={showAnalytics} />
 
         <form onSubmit={handleSubmit} className="max-w-xl mx-auto mb-16">
           <motion.div 
