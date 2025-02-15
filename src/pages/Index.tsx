@@ -128,7 +128,7 @@ const Index = () => {
       </div>
       
       <footer className="py-4 text-center text-sm text-gray-500 bg-gray-50">
-        Created by Your Name {/* Replace "Your Name" with your actual name */}
+        Created by Raoul Kahn
       </footer>
     </div>
   );
