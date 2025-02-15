@@ -93,12 +93,7 @@ const Index = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!companyName.trim()) {
-      toast({
-        title: "Please enter a company name",
-        description: "We need a company name to analyze the market.",
-        variant: "destructive",
-      });
+    if (!validateCompanyName(companyName)) {
       return;
     }
 
@@ -108,7 +103,7 @@ const Index = () => {
 
     try {
       const { data, error } = await supabase.functions.invoke('analyze-market', {
-        body: { companyName }
+        body: { companyName: companyName.trim() }
       });
       
       if (error) {
@@ -285,6 +280,31 @@ const Index = () => {
       title: "Analysis Reset",
       description: "You can now analyze a different company.",
     });
+  };
+
+  const validateCompanyName = (name: string): boolean => {
+    // Remove leading/trailing spaces and check length
+    const trimmedName = name.trim();
+    if (trimmedName.length < 2) {
+      toast({
+        title: "Invalid Company Name",
+        description: "Please enter a company name with at least 2 characters.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Check if it contains at least one letter
+    if (!/[a-zA-Z]/.test(trimmedName)) {
+      toast({
+        title: "Invalid Company Name",
+        description: "Company name must contain at least one letter.",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    return true;
   };
 
   return (
