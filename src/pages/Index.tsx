@@ -304,7 +304,7 @@ const Index = () => {
           <div className="flex items-center justify-center">
             <motion.div 
               whileHover={{ scale: 1.05 }}
-              className="text-sm font-semibold text-blue-600"
+              className="text-base font-semibold text-blue-600"
             >
               Powered by OpenAI
             </motion.div>
