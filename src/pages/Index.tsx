@@ -77,11 +77,13 @@ const Index = () => {
           transition={{ duration: 0.5 }}
           className="text-center space-y-4 mb-12"
         >
-          <div className="flex items-center justify-center gap-2">
-            <div className="inline-block px-4 py-1.5 mb-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-full">
+          <div className="flex items-center justify-center space-x-3">
+            <div className="px-4 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-full">
               Market Analysis Tool
             </div>
-            <span className="text-sm text-gray-500">Powered by OpenAI</span>
+            <span className="text-sm font-medium" style={{ color: '#8B5CF6' }}>
+              Powered by OpenAI
+            </span>
           </div>
           <h1 className="text-4xl font-semibold text-gray-900 mb-4">
             Competitive Market Analysis
