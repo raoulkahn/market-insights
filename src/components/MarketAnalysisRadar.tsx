@@ -1,5 +1,5 @@
 
-import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, Legend, Tooltip } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
 import { motion } from 'framer-motion';
 
 interface MarketAnalysisRadarProps {
@@ -13,28 +13,28 @@ interface MarketAnalysisRadarProps {
 }
 
 const MarketAnalysisRadar = ({ marketData, index }: MarketAnalysisRadarProps) => {
-  // Transform the data for the radar chart
-  const radarData = [
+  // Transform the data for the bar chart
+  const barData = [
     {
-      metric: "User Base",
+      metric: "Target Users",
       value: marketData.targetUsers.length * 20,
-      fullMark: 100,
+      category: "Users",
     },
     {
-      metric: "Market Barriers",
+      metric: "Entry Barriers",
       value: marketData.entryBarriers.length * 25,
-      fullMark: 100,
+      category: "Market",
     },
     {
-      metric: "Features",
+      metric: "Key Features",
       value: marketData.keyFeatures.length * 20,
-      fullMark: 100,
+      category: "Product",
     },
     {
-      metric: "Market Potential",
+      metric: "Market Size",
       // Extract the first number from marketSize string and normalize it
       value: parseInt(marketData.marketSize.match(/\d+/)?.[0] || "0"),
-      fullMark: 100,
+      category: "Market",
     },
   ];
 
@@ -48,14 +48,24 @@ const MarketAnalysisRadar = ({ marketData, index }: MarketAnalysisRadarProps) =>
       <h3 className="text-lg font-semibold text-gray-900 mb-4">Market Position Analysis</h3>
       <div className="h-[300px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <RadarChart cx="50%" cy="50%" outerRadius="65%" data={radarData}>
-            <PolarGrid />
-            <PolarAngleAxis 
+          <BarChart data={barData} margin={{ top: 20, right: 30, left: 20, bottom: 50 }}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis 
               dataKey="metric" 
-              tick={{ 
+              angle={-45}
+              textAnchor="end"
+              height={60}
+              interval={0}
+              tick={{
                 fill: "#4B5563",
                 fontSize: 12,
                 fontWeight: 500
+              }}
+            />
+            <YAxis 
+              tick={{
+                fill: "#4B5563",
+                fontSize: 12
               }}
             />
             <Tooltip 
@@ -66,14 +76,14 @@ const MarketAnalysisRadar = ({ marketData, index }: MarketAnalysisRadarProps) =>
                 padding: "0.5rem"
               }}
             />
-            <Radar
-              name="Market Metrics"
-              dataKey="value"
-              stroke="#2563eb"
-              fill="#3b82f6"
-              fillOpacity={0.6}
+            <Legend />
+            <Bar 
+              dataKey="value" 
+              fill="#3b82f6" 
+              name="Score"
+              radius={[4, 4, 0, 0]}
             />
-          </RadarChart>
+          </BarChart>
         </ResponsiveContainer>
       </div>
     </motion.div>
