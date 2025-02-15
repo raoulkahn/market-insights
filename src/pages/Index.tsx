@@ -180,7 +180,7 @@ const Index = () => {
             </motion.div>
             <motion.div 
               whileHover={{ scale: 1.05 }}
-              className="text-sm font-semibold text-purple-600"
+              className="text-sm font-semibold text-blue-600"
             >
               Powered by OpenAI
             </motion.div>
@@ -196,19 +196,19 @@ const Index = () => {
 
         <form onSubmit={handleSubmit} className="max-w-xl mx-auto mb-16">
           <motion.div 
-            className="flex flex-col sm:flex-row gap-2 sm:gap-0 sm:relative"
+            className="relative flex items-center"
             initial={{ scale: 0.95, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2, duration: 0.5 }}
           >
-            <div className="relative w-full">
+            <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
               <input
                 type="text"
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 placeholder="Enter a company name (e.g., Strava)..."
-                className="w-full pl-12 pr-6 py-4 text-lg bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-200 focus:border-purple-400 transition-all duration-200"
+                className="w-full pl-12 pr-6 py-4 text-lg bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
                 disabled={isLoading}
               />
             </div>
@@ -217,7 +217,7 @@ const Index = () => {
               disabled={isLoading}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="sm:absolute sm:right-3 sm:top-1/2 sm:-translate-y-1/2 px-6 py-2 bg-gray-900 text-white rounded-lg transition-all duration-200 hover:bg-gray-800 disabled:opacity-50 hover:shadow-lg"
+              className="ml-4 px-6 py-4 bg-blue-600 text-white rounded-xl transition-all duration-200 hover:bg-blue-700 disabled:opacity-50 hover:shadow-lg"
             >
               Analyze
             </motion.button>
@@ -231,7 +231,7 @@ const Index = () => {
             transition={{ delay: 0.3 }}
             className="text-center text-gray-500 mb-8"
           >
-            <Lightbulb className="mx-auto mb-4 text-purple-400" size={32} />
+            <Lightbulb className="mx-auto mb-4 text-blue-400" size={32} />
             <p>Enter a company name above to get started with the market analysis</p>
           </motion.div>
         )}
@@ -250,7 +250,7 @@ const Index = () => {
                 onClick={downloadPDF}
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="flex items-center gap-2 px-6 py-3 text-base font-semibold text-white bg-purple-600 rounded-full hover:bg-purple-700 transition-colors hover:shadow-lg"
+                className="flex items-center gap-2 px-6 py-3 text-base font-semibold text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-colors hover:shadow-lg"
               >
                 <Download size={20} />
                 Download PDF Report
