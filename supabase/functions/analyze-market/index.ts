@@ -72,7 +72,7 @@ Format the response as a JSON object with this structure:
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'You are a market research analyst specializing in competitive analysis.' },
+          { role: 'system', content: 'You are a market research analyst specializing in competitive analysis. Always respond with valid JSON that matches the requested structure exactly.' },
           { role: 'user', content: prompt }
         ],
         temperature: 0.7,
@@ -94,12 +94,31 @@ Format the response as a JSON object with this structure:
 
     const data = await response.json();
     console.log('Received response from OpenAI');
-    const analysisText = data.choices[0].message.content;
-    const parsedAnalysis = JSON.parse(analysisText);
+    
+    try {
+      const analysisText = data.choices[0].message.content;
+      console.log('Parsing response:', analysisText);
+      const parsedAnalysis = JSON.parse(analysisText);
+      
+      if (!parsedAnalysis.analysis || !Array.isArray(parsedAnalysis.analysis)) {
+        console.error('Invalid analysis format:', parsedAnalysis);
+        throw new Error('Response does not match expected format');
+      }
 
-    return new Response(JSON.stringify(parsedAnalysis), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+      return new Response(JSON.stringify(parsedAnalysis), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    } catch (parseError) {
+      console.error('Error parsing OpenAI response:', parseError);
+      return new Response(
+        JSON.stringify({ 
+          error: 'Failed to parse OpenAI response',
+          details: parseError.message
+        }), {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
   } catch (error) {
     console.error('Error in analyze-market function:', error);
     return new Response(
