@@ -55,7 +55,7 @@ const MarketAnalysisRadar = ({ marketData, index }: MarketAnalysisRadarProps) =>
       </p>
       <div className="h-[300px] w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={barData} margin={{ top: 20, right: 30, left: 50, bottom: 80 }}>
+          <BarChart data={barData} margin={{ top: 20, right: 60, left: 50, bottom: 80 }}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis 
               dataKey="metric" 
