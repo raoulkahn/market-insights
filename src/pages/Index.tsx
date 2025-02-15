@@ -283,22 +283,26 @@ const Index = () => {
   };
 
   const validateCompanyName = (name: string): boolean => {
-    // Remove leading/trailing spaces and check length
+    // Remove leading/trailing spaces
     const trimmedName = name.trim();
-    if (trimmedName.length < 2) {
+    
+    // Check if the input is empty
+    if (trimmedName.length === 0) {
       toast({
-        title: "Invalid Company Name",
-        description: "Please enter a company name with at least 2 characters.",
+        title: "Invalid Input",
+        description: "Please enter a company name.",
         variant: "destructive",
       });
       return false;
     }
 
-    // Check if it contains at least one letter
-    if (!/[a-zA-Z]/.test(trimmedName)) {
+    // Allow company names that:
+    // - Are at least 2 characters OR
+    // - Contain at least one letter and one number (for cases like 3M)
+    if (trimmedName.length < 2 && !/^(?=.*[a-zA-Z])(?=.*[0-9])/.test(trimmedName)) {
       toast({
         title: "Invalid Company Name",
-        description: "Company name must contain at least one letter.",
+        description: "Company name should be at least 2 characters long or contain both a letter and a number.",
         variant: "destructive",
       });
       return false;
