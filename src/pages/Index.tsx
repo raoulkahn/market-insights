@@ -301,13 +301,7 @@ const Index = () => {
           transition={{ duration: 0.5 }}
           className="text-center space-y-4 mb-12"
         >
-          <div className="flex items-center justify-center gap-6">
-            <motion.div 
-              whileHover={{ scale: 1.05 }}
-              className="px-4 py-1.5 text-sm font-medium text-gray-800 bg-gray-100 rounded-full"
-            >
-              Market Analysis Tool
-            </motion.div>
+          <div className="flex items-center justify-center">
             <motion.div 
               whileHover={{ scale: 1.05 }}
               className="text-sm font-semibold text-blue-600"
@@ -316,7 +310,7 @@ const Index = () => {
             </motion.div>
           </div>
           <h1 className="text-4xl font-semibold text-gray-900 mb-4">
-            Competitive Market Analysis
+            Competitive Market Analysis Tool
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Enter a company name to analyze the market landscape, competition, and potential opportunities
