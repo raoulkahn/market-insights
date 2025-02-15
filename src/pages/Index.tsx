@@ -45,6 +45,10 @@ const Index = () => {
         throw new Error(error.message || 'Failed to analyze market');
       }
 
+      if (!data?.analysis || !Array.isArray(data.analysis)) {
+        throw new Error('Invalid response format from analysis');
+      }
+
       setAnalysis(data.analysis);
       
       toast({
@@ -108,7 +112,7 @@ const Index = () => {
         <div className="space-y-6">
           {isLoading && <LoadingDots />}
           
-          {analysis.map((item, index) => (
+          {Array.isArray(analysis) && analysis.map((item, index) => (
             <CompetitiveAnalysisCard
               key={index}
               index={index}
@@ -124,3 +128,4 @@ const Index = () => {
 };
 
 export default Index;
+
