@@ -5,11 +5,12 @@ import LoadingDots from "@/components/LoadingDots";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
-import { Download, Search, Lightbulb, RefreshCw } from "lucide-react";
+import { Download, Search, Lightbulb, RefreshCw, Music2 } from "lucide-react";
 
 const Index = () => {
   const [companyName, setCompanyName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
   const [analysis, setAnalysis] = useState<Array<{
     title: string;
     description: string;
@@ -322,9 +323,18 @@ const Index = () => {
               className="mt-16 space-y-4"
             >
               <div className="text-center mb-8">
-                <span className="px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-medium">
-                  Example Analysis: Spotify
-                </span>
+                <div className="inline-flex flex-col items-center">
+                  <motion.div
+                    whileHover={{ scale: 1.05, rotate: 360 }}
+                    transition={{ duration: 0.8 }}
+                    className="mb-4 p-4 rounded-full bg-gradient-to-br from-[#9b87f5] to-[#6E59A5] shadow-lg"
+                  >
+                    <Music2 size={32} className="text-white" />
+                  </motion.div>
+                  <span className="px-6 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-medium shadow-sm">
+                    Example Analysis: Spotify
+                  </span>
+                </div>
               </div>
               {spotifyExample.map((item, index) => (
                 <CompetitiveAnalysisCard
