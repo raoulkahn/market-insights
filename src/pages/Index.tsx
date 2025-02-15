@@ -144,8 +144,11 @@ const Index = () => {
     const pdf = new jsPDF();
     let yPosition = 20;
     const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 20;
     const maxWidth = pageWidth - (2 * margin); // Available width for content
+    const footerHeight = 20; // Space reserved for footer
+    const maxYPosition = pageHeight - footerHeight - margin; // Max content position accounting for footer
 
     // Title
     pdf.setFontSize(20);
@@ -159,8 +162,41 @@ const Index = () => {
     yPosition += 15;
 
     analysis.forEach((item, index) => {
-      // Check if we need a new page
-      if (yPosition > 250) {
+      // Calculate required height for the current section
+      const calculateSectionHeight = () => {
+        let height = 0;
+        const lineHeight = 7;
+        
+        // Title height
+        height += 10;
+        
+        // Description height
+        const descriptionLines = pdf.splitTextToSize(item.description, maxWidth);
+        height += lineHeight * descriptionLines.length;
+        
+        if (item.marketData) {
+          // Market data heights (labels + content)
+          const targetUsersLines = pdf.splitTextToSize(item.marketData.targetUsers.join(", "), maxWidth);
+          height += lineHeight + (lineHeight * targetUsersLines.length);
+          
+          const marketSizeLines = pdf.splitTextToSize(item.marketData.marketSize, maxWidth);
+          height += lineHeight + (lineHeight * marketSizeLines.length);
+          
+          const barriersLines = pdf.splitTextToSize(item.marketData.entryBarriers.join(", "), maxWidth);
+          height += lineHeight + (lineHeight * barriersLines.length);
+          
+          const featuresLines = pdf.splitTextToSize(item.marketData.keyFeatures.join(", "), maxWidth);
+          height += lineHeight + (lineHeight * featuresLines.length);
+          
+          height += 10; // Additional spacing
+        }
+        
+        return height;
+      };
+
+      // Check if we need a new page based on the calculated section height
+      const sectionHeight = calculateSectionHeight();
+      if (yPosition + sectionHeight > maxYPosition) {
         pdf.addPage();
         yPosition = 20;
       }
@@ -221,10 +257,15 @@ const Index = () => {
       }
     });
 
-    // Add generation date and footer
-    pdf.setFontSize(10);
-    pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, margin, 287);
-    pdf.text("Created by Raoul Kahn", pageWidth - margin, 287, { align: "right" });
+    // Add generation date and footer on each page
+    const pageCount = pdf.internal.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      pdf.setPage(i);
+      pdf.setFontSize(10);
+      pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, margin, pageHeight - margin);
+      pdf.text(`Page ${i} of ${pageCount}`, pageWidth / 2, pageHeight - margin, { align: "center" });
+      pdf.text("Created by Raoul Kahn", pageWidth - margin, pageHeight - margin, { align: "right" });
+    }
 
     // Save the PDF
     pdf.save(`market-analysis-${companyName.toLowerCase().replace(/\s+/g, "-")}.pdf`);
