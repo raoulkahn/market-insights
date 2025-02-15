@@ -25,7 +25,13 @@ serve(async (req) => {
   try {
     if (!openAIApiKey) {
       console.error('OpenAI API key not found');
-      throw new Error('OpenAI API key not configured');
+      return new Response(
+        JSON.stringify({ 
+          error: 'OpenAI API key not configured',
+        }), {
+        status: 200, // Return 200 to avoid Supabase error handling
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const { companyName } = await req.json();
@@ -76,7 +82,14 @@ Format the response as a JSON object with this structure:
     if (!response.ok) {
       const errorData = await response.json();
       console.error('OpenAI API Error:', errorData);
-      throw new Error(errorData.error?.message || 'Failed to get response from OpenAI');
+      return new Response(
+        JSON.stringify({ 
+          error: 'Failed to get response from OpenAI',
+          details: errorData
+        }), {
+        status: 200, // Return 200 to avoid Supabase error handling
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
     const data = await response.json();
@@ -94,7 +107,7 @@ Format the response as a JSON object with this structure:
         error: error.message,
         details: error.stack 
       }), {
-      status: 500,
+      status: 200, // Return 200 to avoid Supabase error handling
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
