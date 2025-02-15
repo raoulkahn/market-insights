@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import CompetitiveAnalysisCard from "@/components/CareerSuggestionCard";
+import MarketAnalysisRadar from "@/components/MarketAnalysisRadar";
 import LoadingDots from "@/components/LoadingDots";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -244,7 +245,7 @@ const Index = () => {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-gradient-to-b from-soft-gray to-white flex flex-col"
     >
-      <div className="container max-w-4xl px-4 py-16 mx-auto flex-grow">
+      <div className="container max-w-6xl px-4 py-16 mx-auto flex-grow">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -326,15 +327,23 @@ const Index = () => {
                   Example Analysis: Spotify
                 </span>
               </div>
-              {spotifyExample.map((item, index) => (
-                <CompetitiveAnalysisCard
-                  key={index}
-                  index={index}
-                  title={item.title}
-                  description={item.description}
-                  marketData={item.marketData}
-                />
-              ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {spotifyExample.map((item, index) => (
+                  <CompetitiveAnalysisCard
+                    key={index}
+                    index={index}
+                    title={item.title}
+                    description={item.description}
+                    marketData={item.marketData}
+                  />
+                ))}
+                {spotifyExample.length > 0 && (
+                  <MarketAnalysisRadar
+                    marketData={spotifyExample[0].marketData}
+                    index={spotifyExample.length}
+                  />
+                )}
+              </div>
             </motion.div>
           </>
         )}
@@ -370,15 +379,25 @@ const Index = () => {
             </motion.div>
           )}
           
-          {analysis.length > 0 && analysis.map((item, index) => (
-            <CompetitiveAnalysisCard
-              key={index}
-              index={index}
-              title={item.title}
-              description={item.description}
-              marketData={item.marketData}
-            />
-          ))}
+          {analysis.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {analysis.map((item, index) => (
+                <CompetitiveAnalysisCard
+                  key={index}
+                  index={index}
+                  title={item.title}
+                  description={item.description}
+                  marketData={item.marketData}
+                />
+              ))}
+              {analysis.length > 0 && (
+                <MarketAnalysisRadar
+                  marketData={analysis[0].marketData}
+                  index={analysis.length}
+                />
+              )}
+            </div>
+          )}
         </div>
       </div>
       
