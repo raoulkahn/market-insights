@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import CompetitiveAnalysisCard from "@/components/CareerSuggestionCard";
@@ -226,6 +227,7 @@ const Index = () => {
   const handleReset = () => {
     setCompanyName("");
     setAnalysis([]);
+    setShowAnalytics(false); // Reset analytics view when starting fresh
     toast({
       title: "Analysis Reset",
       description: "You can now analyze a different company.",
@@ -275,15 +277,17 @@ const Index = () => {
             in their space. Get insights on market size, target users, and required features.
           </p>
           
-          <motion.button
-            onClick={toggleAnalytics}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="mx-auto mt-4 flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
-          >
-            <ChartLine size={20} />
-            {showAnalytics ? 'Hide Analytics' : 'Show Analytics'}
-          </motion.button>
+          {analysis.length > 0 && (
+            <motion.button
+              onClick={toggleAnalytics}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="mx-auto mt-4 flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
+            >
+              <ChartLine size={20} />
+              {showAnalytics ? 'Hide Analytics' : 'Show Analytics'}
+            </motion.button>
+          )}
         </motion.div>
 
         <AnalyticsDashboard data={analyticsData} isVisible={showAnalytics} />
