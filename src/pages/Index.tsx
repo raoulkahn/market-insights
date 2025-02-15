@@ -5,6 +5,8 @@ import CompetitiveAnalysisCard from "@/components/CareerSuggestionCard";
 import LoadingDots from "@/components/LoadingDots";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import jsPDF from "jspdf";
+import { Download } from "lucide-react";
 
 const Index = () => {
   const [companyName, setCompanyName] = useState("");
@@ -68,6 +70,93 @@ const Index = () => {
     }
   };
 
+  const downloadPDF = () => {
+    const pdf = new jsPDF();
+    let yPosition = 20;
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const margin = 20;
+    const contentWidth = pageWidth - 2 * margin;
+
+    // Title
+    pdf.setFontSize(20);
+    pdf.text("Market Analysis Report", pageWidth / 2, yPosition, { align: "center" });
+    yPosition += 15;
+
+    // Company name
+    pdf.setFontSize(16);
+    pdf.text(`Analysis for: ${companyName}`, margin, yPosition);
+    yPosition += 15;
+
+    analysis.forEach((item, index) => {
+      // Check if we need a new page
+      if (yPosition > 250) {
+        pdf.addPage();
+        yPosition = 20;
+      }
+
+      // Section title
+      pdf.setFontSize(14);
+      pdf.setFont(undefined, "bold");
+      pdf.text(`${index + 1}. ${item.title}`, margin, yPosition);
+      yPosition += 10;
+
+      // Description
+      pdf.setFontSize(12);
+      pdf.setFont(undefined, "normal");
+      const descriptionLines = pdf.splitTextToSize(item.description, contentWidth);
+      pdf.text(descriptionLines, margin, yPosition);
+      yPosition += 10 * descriptionLines.length;
+
+      // Market Data
+      if (item.marketData) {
+        // Target Users
+        pdf.setFont(undefined, "bold");
+        pdf.text("Target Users:", margin, yPosition);
+        yPosition += 7;
+        pdf.setFont(undefined, "normal");
+        pdf.text(item.marketData.targetUsers.join(", "), margin, yPosition);
+        yPosition += 10;
+
+        // Market Size
+        pdf.setFont(undefined, "bold");
+        pdf.text("Market Size:", margin, yPosition);
+        yPosition += 7;
+        pdf.setFont(undefined, "normal");
+        pdf.text(item.marketData.marketSize, margin, yPosition);
+        yPosition += 10;
+
+        // Entry Barriers
+        pdf.setFont(undefined, "bold");
+        pdf.text("Entry Barriers:", margin, yPosition);
+        yPosition += 7;
+        pdf.setFont(undefined, "normal");
+        pdf.text(item.marketData.entryBarriers.join(", "), margin, yPosition);
+        yPosition += 10;
+
+        // Key Features
+        pdf.setFont(undefined, "bold");
+        pdf.text("Required Features:", margin, yPosition);
+        yPosition += 7;
+        pdf.setFont(undefined, "normal");
+        pdf.text(item.marketData.keyFeatures.join(", "), margin, yPosition);
+        yPosition += 20;
+      }
+    });
+
+    // Add generation date and footer
+    pdf.setFontSize(10);
+    pdf.text(`Generated on: ${new Date().toLocaleDateString()}`, margin, 287);
+    pdf.text("Created by Raoul Kahn", pageWidth - margin, 287, { align: "right" });
+
+    // Save the PDF
+    pdf.save(`market-analysis-${companyName.toLowerCase().replace(/\s+/g, "-")}.pdf`);
+
+    toast({
+      title: "PDF Downloaded",
+      description: "Your market analysis report has been downloaded successfully.",
+    });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-soft-gray to-white flex flex-col">
       <div className="container max-w-4xl px-4 py-16 mx-auto flex-grow">
@@ -116,6 +205,18 @@ const Index = () => {
 
         <div className="space-y-6">
           {isLoading && <LoadingDots />}
+          
+          {analysis.length > 0 && (
+            <div className="flex justify-end mb-4">
+              <button
+                onClick={downloadPDF}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 transition-colors"
+              >
+                <Download size={16} />
+                Download PDF Report
+              </button>
+            </div>
+          )}
           
           {Array.isArray(analysis) && analysis.map((item, index) => (
             <CompetitiveAnalysisCard
