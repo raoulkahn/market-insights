@@ -70,7 +70,7 @@ Format the response as a JSON object with this structure:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-3.5-turbo',
         messages: [
           { role: 'system', content: 'You are a market research analyst specializing in competitive analysis. Always respond with valid JSON that matches the requested structure exactly.' },
           { role: 'user', content: prompt }
