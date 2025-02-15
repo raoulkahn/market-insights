@@ -258,7 +258,7 @@ const Index = () => {
     });
 
     // Add generation date and footer on each page
-    const pageCount = pdf.internal.getNumberOfPages();
+    const pageCount = pdf.internal.pages.length - 1;
     for (let i = 1; i <= pageCount; i++) {
       pdf.setPage(i);
       pdf.setFontSize(10);
