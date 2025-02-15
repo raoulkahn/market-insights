@@ -7,15 +7,29 @@ const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Max-Age': '86400',
 };
 
 serve(async (req) => {
+  console.log('Received request:', req.method);
+  
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, {
+      status: 204,
+      headers: corsHeaders
+    });
   }
 
   try {
+    if (!openAIApiKey) {
+      console.error('OpenAI API key not found');
+      throw new Error('OpenAI API key not configured');
+    }
+
     const { companyName } = await req.json();
+    console.log('Analyzing company:', companyName);
 
     const prompt = `Analyze the market for ${companyName}. Provide a detailed analysis including:
 1. Market Overview
@@ -42,6 +56,7 @@ Format the response as a JSON object with this structure:
   }]
 }`;
 
+    console.log('Making request to OpenAI');
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -49,7 +64,7 @@ Format the response as a JSON object with this structure:
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: 'You are a market research analyst specializing in competitive analysis.' },
           { role: 'user', content: prompt }
@@ -65,6 +80,7 @@ Format the response as a JSON object with this structure:
     }
 
     const data = await response.json();
+    console.log('Received response from OpenAI');
     const analysisText = data.choices[0].message.content;
     const parsedAnalysis = JSON.parse(analysisText);
 
@@ -72,8 +88,12 @@ Format the response as a JSON object with this structure:
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error('Error in analyze-market function:', error);
+    return new Response(
+      JSON.stringify({ 
+        error: error.message,
+        details: error.stack 
+      }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
