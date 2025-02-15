@@ -5,7 +5,7 @@ import LoadingDots from "@/components/LoadingDots";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
-import { Download, Search, Lightbulb, RefreshCw, Music2 } from "lucide-react";
+import { Download, Search, RefreshCw } from "lucide-react";
 
 const Index = () => {
   const [companyName, setCompanyName] = useState("");
@@ -312,7 +312,6 @@ const Index = () => {
               transition={{ delay: 0.3 }}
               className="text-center text-gray-500 mb-8"
             >
-              <Lightbulb className="mx-auto mb-4 text-blue-400" size={32} />
               <p>Enter a company name above to get started with the market analysis</p>
             </motion.div>
 
@@ -323,18 +322,9 @@ const Index = () => {
               className="mt-16 space-y-4"
             >
               <div className="text-center mb-8">
-                <div className="inline-flex flex-col items-center">
-                  <motion.div
-                    whileHover={{ scale: 1.05, rotate: 360 }}
-                    transition={{ duration: 0.8 }}
-                    className="mb-4 p-4 rounded-full bg-gradient-to-br from-[#9b87f5] to-[#6E59A5] shadow-lg"
-                  >
-                    <Music2 size={32} className="text-white" />
-                  </motion.div>
-                  <span className="px-6 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-medium shadow-sm">
-                    Example Analysis: Spotify
-                  </span>
-                </div>
+                <span className="px-6 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-medium shadow-sm">
+                  Example Analysis: Spotify
+                </span>
               </div>
               {spotifyExample.map((item, index) => (
                 <CompetitiveAnalysisCard
