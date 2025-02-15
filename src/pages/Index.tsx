@@ -1,19 +1,16 @@
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import CompetitiveAnalysisCard from "@/components/CareerSuggestionCard";
 import LoadingDots from "@/components/LoadingDots";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
-import { Download, Search, Lightbulb, RefreshCw, ChartLine } from "lucide-react";
-import AnalyticsDashboard from "@/components/AnalyticsDashboard";
+import { Download, Search, Lightbulb, RefreshCw } from "lucide-react";
 
 const Index = () => {
   const [companyName, setCompanyName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showAnalytics, setShowAnalytics] = useState(false);
-  const [analyticsData, setAnalyticsData] = useState([]);
   const [analysis, setAnalysis] = useState<Array<{
     title: string;
     description: string;
@@ -25,31 +22,6 @@ const Index = () => {
     };
   }>>([]);
   const { toast } = useToast();
-
-  const fetchAnalytics = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('analytics_summary')
-        .select('*')
-        .limit(30);
-      
-      if (error) throw error;
-      setAnalyticsData(data || []);
-    } catch (error) {
-      console.error('Error fetching analytics:', error);
-      toast({
-        title: "Error loading analytics",
-        description: "Failed to load analytics data. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  useEffect(() => {
-    if (showAnalytics) {
-      fetchAnalytics();
-    }
-  }, [showAnalytics]);
 
   const trackAnalysis = async (startTime: number) => {
     try {
@@ -227,18 +199,10 @@ const Index = () => {
   const handleReset = () => {
     setCompanyName("");
     setAnalysis([]);
-    setShowAnalytics(false); // Reset analytics view when starting fresh
     toast({
       title: "Analysis Reset",
       description: "You can now analyze a different company.",
     });
-  };
-
-  const toggleAnalytics = () => {
-    setShowAnalytics(!showAnalytics);
-    if (!showAnalytics) {
-      fetchAnalytics();
-    }
   };
 
   return (
@@ -276,21 +240,7 @@ const Index = () => {
             Enter a company name to analyze the market landscape, competition, and potential opportunities
             in their space. Get insights on market size, target users, and required features.
           </p>
-          
-          {analysis.length > 0 && (
-            <motion.button
-              onClick={toggleAnalytics}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="mx-auto mt-4 flex items-center gap-2 px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
-            >
-              <ChartLine size={20} />
-              {showAnalytics ? 'Hide Analytics' : 'Show Analytics'}
-            </motion.button>
-          )}
         </motion.div>
-
-        <AnalyticsDashboard data={analyticsData} isVisible={showAnalytics} />
 
         <form onSubmit={handleSubmit} className="max-w-xl mx-auto mb-16">
           <motion.div 
