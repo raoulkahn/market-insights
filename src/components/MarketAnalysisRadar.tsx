@@ -63,10 +63,22 @@ const MarketAnalysisRadar = ({ marketData, index }: MarketAnalysisRadarProps) =>
               }}
             />
             <YAxis 
+              label={{ 
+                value: 'Strength Score (0-100)', 
+                angle: -90, 
+                position: 'insideLeft',
+                style: {
+                  textAnchor: 'middle',
+                  fill: "#4B5563",
+                  fontSize: 12,
+                  fontWeight: 500
+                }
+              }}
               tick={{
                 fill: "#4B5563",
                 fontSize: 12
               }}
+              domain={[0, 100]}
             />
             <Tooltip 
               contentStyle={{
@@ -75,12 +87,13 @@ const MarketAnalysisRadar = ({ marketData, index }: MarketAnalysisRadarProps) =>
                 borderRadius: "0.5rem",
                 padding: "0.5rem"
               }}
+              formatter={(value: number) => [`${value} / 100`, "Strength Score"]}
             />
             <Legend />
             <Bar 
               dataKey="value" 
               fill="#3b82f6" 
-              name="Score"
+              name="Competitive Score"
               radius={[4, 4, 0, 0]}
             />
           </BarChart>
