@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { motion } from "framer-motion";
 import CompetitiveAnalysisCard from "@/components/CareerSuggestionCard";
@@ -34,44 +33,36 @@ const Index = () => {
     setIsLoading(true);
     setAnalysis([]);
 
-    // Simulate API call with example data
-    setTimeout(() => {
-      const mockAnalysis = [
-        {
-          title: "Market Overview",
-          description: "Strava operates in the highly competitive fitness tracking market with a focus on social features and community engagement.",
-          marketData: {
-            targetUsers: ["Athletes", "Runners", "Cyclists", "Fitness Enthusiasts", "Urban Athletes"],
-            marketSize: "Global fitness app market size: $14.7 billion (2023)",
-            entryBarriers: ["High Development Costs", "Strong Incumbents", "User Acquisition", "Data Privacy"],
-            keyFeatures: ["GPS Tracking", "Social Feed", "Activity Analysis", "Challenges", "Premium Features"],
-          },
+    try {
+      const response = await fetch('https://lovable-ai-edmsrslmcv.lovableai.workers.dev/analyze-market', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
         },
-        {
-          title: "Competition Analysis",
-          description: "The market has several established players but opportunities exist for specialized features and niche audiences.",
-          marketData: {
-            targetUsers: ["Serious Athletes", "Casual Exercisers", "Team Sports", "Adventure Sports"],
-            marketSize: "Expected CAGR of 17.6% (2024-2030)",
-            entryBarriers: ["Brand Recognition", "Feature Parity", "Technical Infrastructure"],
-            keyFeatures: ["Workout Planning", "Performance Analytics", "Community Features", "Mobile-First Design"],
-          },
-        },
-        {
-          title: "Opportunity Assessment",
-          description: "While the market is mature, there are opportunities for innovation in specific niches and features.",
-          marketData: {
-            targetUsers: ["Niche Sports", "Corporate Wellness", "Health Enthusiasts", "Professional Teams"],
-            marketSize: "Rising demand for digital fitness solutions",
-            entryBarriers: ["Market Saturation", "User Retention", "Marketing Costs"],
-            keyFeatures: ["AI Coaching", "Integration APIs", "Social Gamification", "Data Analytics"],
-          },
-        },
-      ];
+        body: JSON.stringify({ companyName }),
+      });
 
-      setAnalysis(mockAnalysis);
+      if (!response.ok) {
+        throw new Error('Failed to analyze market');
+      }
+
+      const data = await response.json();
+      setAnalysis(data.analysis);
+      
+      toast({
+        title: "Analysis Complete",
+        description: "Market analysis has been generated successfully.",
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate market analysis. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (
