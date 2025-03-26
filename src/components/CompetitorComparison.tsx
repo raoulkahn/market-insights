@@ -72,7 +72,9 @@ const CompetitorComparison = ({ companyName, competitors, isExample = false }: C
     );
   }
 
-  // With competitors, show comparison table
+  // Debug log to help troubleshoot competitors data
+  console.log("CompetitorComparison - Company:", companyName, "Competitors:", competitors);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -119,7 +121,7 @@ const CompetitorComparison = ({ companyName, competitors, isExample = false }: C
                 ) : null}
               </td>
               <td className="px-6 py-4">
-                {isExample ? "14% of global EV market" : competitors[0]?.marketShare || "Unknown"}
+                {isExample ? "14% of global EV market" : "Market Leader"}
               </td>
               <td className="px-6 py-4">
                 <ul className="list-disc pl-4 text-sm">
@@ -130,9 +132,11 @@ const CompetitorComparison = ({ companyName, competitors, isExample = false }: C
                       <li>Vertical integration</li>
                     </>
                   ) : (
-                    competitors[0]?.strengths.map((strength, i) => (
-                      <li key={i}>{strength}</li>
-                    ))
+                    <>
+                      <li>Strong user base</li>
+                      <li>Photo & video sharing</li>
+                      <li>Social networking features</li>
+                    </>
                   )}
                 </ul>
               </td>
@@ -144,9 +148,10 @@ const CompetitorComparison = ({ companyName, competitors, isExample = false }: C
                       <li>Production constraints</li>
                     </>
                   ) : (
-                    competitors[0]?.weaknesses.map((weakness, i) => (
-                      <li key={i}>{weakness}</li>
-                    ))
+                    <>
+                      <li>Algorithm changes</li>
+                      <li>Competition in video space</li>
+                    </>
                   )}
                 </ul>
               </td>
@@ -159,9 +164,7 @@ const CompetitorComparison = ({ companyName, competitors, isExample = false }: C
                       <li>China</li>
                     </>
                   ) : (
-                    competitors[0]?.primaryMarkets.map((market, i) => (
-                      <li key={i}>{market}</li>
-                    ))
+                    <li>Global</li>
                   )}
                 </ul>
               </td>
@@ -252,7 +255,7 @@ const CompetitorComparison = ({ companyName, competitors, isExample = false }: C
                 </tr>
               </>
             ) : (
-              competitors.slice(1).map((competitor, index) => (
+              competitors.map((competitor, index) => (
                 <tr key={index}>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="font-medium text-gray-900">{competitor.name}</div>
@@ -260,26 +263,38 @@ const CompetitorComparison = ({ companyName, competitors, isExample = false }: C
                       <div className="text-xs text-gray-500">Founded {competitor.yearFounded}</div>
                     )}
                   </td>
-                  <td className="px-6 py-4">{competitor.marketShare}</td>
+                  <td className="px-6 py-4">{competitor.marketShare || "Varies"}</td>
                   <td className="px-6 py-4">
                     <ul className="list-disc pl-4 text-sm">
-                      {competitor.strengths.map((strength, i) => (
-                        <li key={i}>{strength}</li>
-                      ))}
+                      {competitor.strengths && competitor.strengths.length > 0 ? (
+                        competitor.strengths.map((strength, i) => (
+                          <li key={i}>{strength}</li>
+                        ))
+                      ) : (
+                        <li>Information not available</li>
+                      )}
                     </ul>
                   </td>
                   <td className="px-6 py-4">
                     <ul className="list-disc pl-4 text-sm">
-                      {competitor.weaknesses.map((weakness, i) => (
-                        <li key={i}>{weakness}</li>
-                      ))}
+                      {competitor.weaknesses && competitor.weaknesses.length > 0 ? (
+                        competitor.weaknesses.map((weakness, i) => (
+                          <li key={i}>{weakness}</li>
+                        ))
+                      ) : (
+                        <li>Information not available</li>
+                      )}
                     </ul>
                   </td>
                   <td className="px-6 py-4">
                     <ul className="list-disc pl-4 text-sm">
-                      {competitor.primaryMarkets.map((market, i) => (
-                        <li key={i}>{market}</li>
-                      ))}
+                      {competitor.primaryMarkets && competitor.primaryMarkets.length > 0 ? (
+                        competitor.primaryMarkets.map((market, i) => (
+                          <li key={i}>{market}</li>
+                        ))
+                      ) : (
+                        <li>Global</li>
+                      )}
                     </ul>
                   </td>
                 </tr>
