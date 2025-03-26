@@ -73,6 +73,34 @@ const Index = () => {
     yearFounded?: string;
   }>>(defaultCompetitors);
 
+  // Example Tesla competitors data for the demo - Define only ONCE
+  const teslaCompetitors = [
+    {
+      name: "Volkswagen Group",
+      marketShare: "11% of global EV market",
+      strengths: ["Manufacturing scale", "Global distribution", "Brand portfolio"],
+      weaknesses: ["Legacy infrastructure", "Software capabilities"],
+      primaryMarkets: ["Europe", "China", "North America"],
+      yearFounded: "1937"
+    },
+    {
+      name: "BYD",
+      marketShare: "18% of global EV market",
+      strengths: ["Battery technology", "Cost leadership", "Vertical integration"],
+      weaknesses: ["Limited global presence", "Brand recognition outside Asia"],
+      primaryMarkets: ["China", "Asia-Pacific", "Emerging markets"],
+      yearFounded: "1995"
+    },
+    {
+      name: "Rivian",
+      marketShare: "1% of global EV market",
+      strengths: ["Specialized in EV trucks/SUVs", "Strong backing from investors", "Adventure-focused brand"],
+      weaknesses: ["Production ramp challenges", "Financial sustainability"],
+      primaryMarkets: ["North America"],
+      yearFounded: "2009"
+    }
+  ];
+
   const teslaExample = [
     {
       title: "Electric Vehicle Market Analysis",
@@ -103,34 +131,6 @@ const Index = () => {
         entryBarriers: ["Technical Expertise", "Capital Requirements", "Established Competitors"],
         keyFeatures: ["Solar Roof", "Powerwall", "Full Self-Driving", "Tesla Bot", "Gigafactory Scaling"]
       }
-    }
-  ];
-
-  // Example Tesla competitors data for the demo
-  const teslaCompetitors = [
-    {
-      name: "Volkswagen Group",
-      marketShare: "11% of global EV market",
-      strengths: ["Manufacturing scale", "Global distribution", "Brand portfolio"],
-      weaknesses: ["Legacy infrastructure", "Software capabilities"],
-      primaryMarkets: ["Europe", "China", "North America"],
-      yearFounded: "1937"
-    },
-    {
-      name: "BYD",
-      marketShare: "18% of global EV market",
-      strengths: ["Battery technology", "Cost leadership", "Vertical integration"],
-      weaknesses: ["Limited global presence", "Brand recognition outside Asia"],
-      primaryMarkets: ["China", "Asia-Pacific", "Emerging markets"],
-      yearFounded: "1995"
-    },
-    {
-      name: "Rivian",
-      marketShare: "1% of global EV market",
-      strengths: ["Specialized in EV trucks/SUVs", "Strong backing from investors", "Adventure-focused brand"],
-      weaknesses: ["Production ramp challenges", "Financial sustainability"],
-      primaryMarkets: ["North America"],
-      yearFounded: "2009"
     }
   ];
 
@@ -429,34 +429,6 @@ const Index = () => {
 
     return true;
   };
-
-  // Example Tesla competitors data for the demo
-  const teslaCompetitors = [
-    {
-      name: "Volkswagen Group",
-      marketShare: "11% of global EV market",
-      strengths: ["Manufacturing scale", "Global distribution", "Brand portfolio"],
-      weaknesses: ["Legacy infrastructure", "Software capabilities"],
-      primaryMarkets: ["Europe", "China", "North America"],
-      yearFounded: "1937"
-    },
-    {
-      name: "BYD",
-      marketShare: "18% of global EV market",
-      strengths: ["Battery technology", "Cost leadership", "Vertical integration"],
-      weaknesses: ["Limited global presence", "Brand recognition outside Asia"],
-      primaryMarkets: ["China", "Asia-Pacific", "Emerging markets"],
-      yearFounded: "1995"
-    },
-    {
-      name: "Rivian",
-      marketShare: "1% of global EV market",
-      strengths: ["Specialized in EV trucks/SUVs", "Strong backing from investors", "Adventure-focused brand"],
-      weaknesses: ["Production ramp challenges", "Financial sustainability"],
-      primaryMarkets: ["North America"],
-      yearFounded: "2009"
-    }
-  ];
 
   // Updated Tesla image URL - check that it works correctly
   const teslaImageUrl = "https://images.unsplash.com/photo-1562053342-7280b39e696c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80";
