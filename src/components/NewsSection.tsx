@@ -46,7 +46,7 @@ const NewsSection = ({ companyName, articles, isLoading }: NewsSectionProps) => 
     >
       <div className="text-center mb-8">
         <span className="px-6 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-medium shadow-sm inline-flex items-center">
-          <Newspaper className="w-4 h-4 mr-2" />
+          <Newspaper className="w-4 w-4 mr-2" />
           Latest News for {companyName}
         </span>
       </div>

@@ -70,11 +70,15 @@ serve(async (req) => {
     // Check if rate limit is exceeded
     if (rateLimit.count >= MAX_REQUESTS_PER_WINDOW) {
       console.log('Rate limit exceeded for IP:', clientIP);
-      return new Response(JSON.stringify({
-        error: 'Rate limit exceeded. Please try again later.',
-        articles: []
-      }), {
-        status: 429,
+      
+      // Instead of returning an error, return placeholder articles with a flag
+      const result = { 
+        articles: getDefaultArticles(companyName),
+        limitExceeded: true
+      };
+      
+      return new Response(JSON.stringify(result), {
+        status: 200, // Return 200 to avoid error handling
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
@@ -101,29 +105,8 @@ serve(async (req) => {
       
       // Return default articles on error to ensure UI always has something to display
       const result = { 
-        articles: [
-          {
-            title: `Latest News on ${companyName}`,
-            description: "Check back later for more news updates.",
-            url: "https://news.google.com",
-            source: "News Service",
-            publishedDate: new Date().toISOString()
-          },
-          {
-            title: `${companyName} Industry Trends`,
-            description: "Industry analysts are watching developments closely.",
-            url: "https://news.google.com",
-            source: "Market News",
-            publishedDate: new Date().toISOString()
-          },
-          {
-            title: `${companyName} Product Updates`,
-            description: "New releases and product updates expected soon.",
-            url: "https://news.google.com",
-            source: "Tech News",
-            publishedDate: new Date().toISOString()
-          }
-        ] 
+        articles: getDefaultArticles(companyName),
+        limitExceeded: errorText.includes("request limit") 
       };
       
       // Cache the default result
@@ -152,32 +135,10 @@ serve(async (req) => {
       }));
     } else {
       // Add default articles if none were returned
-      articles = [
-        {
-          title: `Latest News on ${companyName}`,
-          description: "Check back later for more news updates.",
-          url: "https://news.google.com",
-          source: "News Service",
-          publishedDate: new Date().toISOString()
-        },
-        {
-          title: `${companyName} Industry Trends`,
-          description: "Industry analysts are watching developments closely.",
-          url: "https://news.google.com",
-          source: "Market News",
-          publishedDate: new Date().toISOString()
-        },
-        {
-          title: `${companyName} Product Updates`,
-          description: "New releases and product updates expected soon.",
-          url: "https://news.google.com",
-          source: "Tech News",
-          publishedDate: new Date().toISOString()
-        }
-      ];
+      articles = getDefaultArticles(companyName);
     }
     
-    const result = { articles };
+    const result = { articles, limitExceeded: false };
     
     // Cache the result
     cache[cacheKey] = {
@@ -193,32 +154,38 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         error: error.message,
-        articles: [
-          {
-            title: "Latest Industry News",
-            description: "Stay tuned for the latest updates in the industry.",
-            url: "https://news.google.com",
-            source: "News Service",
-            publishedDate: new Date().toISOString()
-          },
-          {
-            title: "Market Trends",
-            description: "Analysts are following developments in the market.",
-            url: "https://news.google.com",
-            source: "Market News",
-            publishedDate: new Date().toISOString()
-          },
-          {
-            title: "Product Updates",
-            description: "New products and services on the horizon.",
-            url: "https://news.google.com",
-            source: "Tech News",
-            publishedDate: new Date().toISOString()
-          }
-        ] 
+        articles: getDefaultArticles("current market trends"),
+        limitExceeded: false
       }), {
       status: 200, // Return 200 to avoid Supabase error handling
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   }
 });
+
+// Helper function to generate default articles
+function getDefaultArticles(companyName: string) {
+  return [
+    {
+      title: `Latest News on ${companyName}`,
+      description: "Check back later for more news updates.",
+      url: "https://news.google.com",
+      source: "News Service",
+      publishedDate: new Date().toISOString()
+    },
+    {
+      title: `${companyName} Industry Trends`,
+      description: "Industry analysts are watching developments closely.",
+      url: "https://news.google.com",
+      source: "Market News",
+      publishedDate: new Date().toISOString()
+    },
+    {
+      title: `${companyName} Product Updates`,
+      description: "New releases and product updates expected soon.",
+      url: "https://news.google.com",
+      source: "Tech News",
+      publishedDate: new Date().toISOString()
+    }
+  ];
+}
