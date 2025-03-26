@@ -2,7 +2,8 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Newspaper, ExternalLink } from "lucide-react";
+import { Newspaper, ExternalLink, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 type NewsArticle = {
   title: string;
@@ -30,6 +31,12 @@ const NewsSection = ({ companyName, articles, isLoading }: NewsSectionProps) => 
     );
   }
 
+  // Check if we're showing default articles (this happens when API limit is reached)
+  const isShowingDefaultArticles = articles.length > 0 && 
+    articles.every(article => article.source === "News Service" || 
+                             article.source === "Market News" || 
+                             article.source === "Tech News");
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -43,6 +50,16 @@ const NewsSection = ({ companyName, articles, isLoading }: NewsSectionProps) => 
           Latest News for {companyName}
         </span>
       </div>
+      
+      {isShowingDefaultArticles && (
+        <Alert className="mb-6" variant="warning">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>API Limit Reached</AlertTitle>
+          <AlertDescription>
+            The news API request limit has been reached. Showing placeholder articles until the limit resets at midnight UTC.
+          </AlertDescription>
+        </Alert>
+      )}
       
       {(!articles || articles.length === 0) && !isLoading ? (
         <motion.div
