@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import MarketAnalysisCard from "@/components/MarketAnalysisCard";
@@ -9,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
 import { Download, Search, RefreshCw } from "lucide-react";
+import { getCompanyProductImage } from "@/utils/companyImages";
 
 const Index = () => {
   const [companyName, setCompanyName] = useState("");
@@ -448,6 +448,7 @@ const Index = () => {
                   companyName="Tesla"
                   articles={newsArticles}
                   isLoading={isLoadingNews}
+                  companyImageUrl={getCompanyProductImage("Tesla")}
                 />
               )}
               
@@ -512,6 +513,7 @@ const Index = () => {
               companyName={companyName}
               articles={newsArticles}
               isLoading={isLoadingNews}
+              companyImageUrl={companyName ? getCompanyProductImage(companyName) : undefined}
             />
           )}
         </div>
