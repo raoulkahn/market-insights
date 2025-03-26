@@ -19,7 +19,9 @@ interface CompetitiveAnalysisCardProps {
 const MarketAnalysisCard = ({ index, title, description, marketData }: CompetitiveAnalysisCardProps) => {
   // Check if this is a competition analysis card
   const isCompetitionAnalysis = title.toLowerCase().includes("competition") || 
-                               title.toLowerCase().includes("competitive");
+                               title.toLowerCase().includes("competitive") ||
+                               title.toLowerCase().includes("overview") ||
+                               title.toLowerCase().includes("landscape");
   
   // Format description to include specific competitors if this is a competition analysis
   const enhancedDescription = isCompetitionAnalysis 
@@ -64,52 +66,100 @@ const MarketAnalysisCard = ({ index, title, description, marketData }: Competiti
 
 // Helper function to enhance competition description with specific competitor names
 const enhanceCompetitionDescription = (description: string): string => {
-  // Case-insensitive check for both "tik tok" and "tiktok" variations
-  if (description.toLowerCase().includes("tik tok") || description.toLowerCase().includes("tiktok")) {
-    if (description.includes("various social media platforms") || description.includes("multiple platforms")) {
-      return description.replace(
-        /(various social media platforms|multiple platforms)/i,
-        "major competitors like Instagram, Snapchat, YouTube, and Facebook"
-      );
+  let enhancedDesc = description;
+  const lowerDesc = description.toLowerCase();
+  
+  // Generic patterns that indicate vague competitor references
+  const vaguePhrases = [
+    /\b(various|multiple|several|many|different) (social media platforms|platforms|competitors|companies|players|brands)\b/i,
+    /\b(faces|experiencing|has|with) (competition|competitive pressure)\b/i,
+    /\b(other|leading|major) (platforms|competitors|players|brands)\b/i
+  ];
+  
+  // TikTok specific enhancement
+  if (lowerDesc.includes("tik tok") || lowerDesc.includes("tiktok")) {
+    for (const pattern of vaguePhrases) {
+      if (pattern.test(enhancedDesc)) {
+        enhancedDesc = enhancedDesc.replace(
+          pattern,
+          "major competitors like Instagram, Snapchat, YouTube, and Facebook"
+        );
+        return enhancedDesc; // Return after first match to avoid multiple replacements
+      }
+    }
+    
+    // If we haven't found any patterns yet but it's definitely about TikTok, 
+    // try to insert competitor names near the end of a sentence about competition
+    if (lowerDesc.includes("competition") || lowerDesc.includes("competitive")) {
+      const competitionSentencePattern = /([^.!?]*(?:competition|competitive)[^.!?]*)[.!?]/i;
+      const match = enhancedDesc.match(competitionSentencePattern);
+      
+      if (match) {
+        const sentence = match[0];
+        const modifiedSentence = sentence.replace(
+          /\.$/, 
+          " from major competitors like Instagram, Snapchat, YouTube, and Facebook."
+        );
+        enhancedDesc = enhancedDesc.replace(sentence, modifiedSentence);
+        return enhancedDesc;
+      }
     }
   }
   
-  // Instagram competitors check
-  if (description.toLowerCase().includes("instagram")) {
-    if (description.includes("various social media platforms") || description.includes("multiple platforms")) {
-      return description.replace(
-        /(various social media platforms|multiple platforms)/i,
-        "major competitors like TikTok, Snapchat, YouTube, and Facebook"
-      );
+  // Instagram specific enhancement
+  if (lowerDesc.includes("instagram")) {
+    for (const pattern of vaguePhrases) {
+      if (pattern.test(enhancedDesc)) {
+        enhancedDesc = enhancedDesc.replace(
+          pattern,
+          "major competitors like TikTok, Snapchat, YouTube, and Facebook"
+        );
+        return enhancedDesc;
+      }
     }
   }
   
   // For automotive companies
-  if (description.includes("various automakers") || description.includes("automotive industry")) {
-    if (description.toLowerCase().includes("tesla")) {
-      return description.replace(
-        /(various automakers|competition in the automotive industry)/i,
-        "major competitors like Volkswagen Group, BYD, Ford, and Rivian"
-      );
+  if (lowerDesc.includes("automotive") || lowerDesc.includes("automaker") || lowerDesc.includes("car manufacturer")) {
+    if (lowerDesc.includes("tesla")) {
+      for (const pattern of vaguePhrases) {
+        if (pattern.test(enhancedDesc)) {
+          enhancedDesc = enhancedDesc.replace(
+            pattern,
+            "major competitors like Volkswagen Group, BYD, Ford, and Rivian"
+          );
+          return enhancedDesc;
+        }
+      }
     }
     
-    if (description.toLowerCase().includes("ford")) {
-      return description.replace(
-        /(various automakers|competition in the automotive industry)/i,
-        "major competitors like General Motors, Toyota, and Volkswagen"
-      );
+    if (lowerDesc.includes("ford")) {
+      for (const pattern of vaguePhrases) {
+        if (pattern.test(enhancedDesc)) {
+          enhancedDesc = enhancedDesc.replace(
+            pattern,
+            "major competitors like General Motors, Toyota, and Volkswagen"
+          );
+          return enhancedDesc;
+        }
+      }
     }
   }
   
   // Generic enhancement for competition sections with various or multiple descriptors
-  if (description.toLowerCase().includes("competition") || description.toLowerCase().includes("competitive")) {
-    return description.replace(
-      /(various|multiple) (companies|platforms|competitors|players|brands)/i,
-      "key industry competitors"
-    );
+  if (lowerDesc.includes("competition") || lowerDesc.includes("competitive")) {
+    for (const pattern of vaguePhrases) {
+      if (pattern.test(enhancedDesc)) {
+        enhancedDesc = enhancedDesc.replace(
+          pattern,
+          "key industry competitors"
+        );
+        return enhancedDesc;
+      }
+    }
   }
   
-  return description;
+  return enhancedDesc;
 };
 
 export default MarketAnalysisCard;
