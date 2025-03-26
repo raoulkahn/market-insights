@@ -353,7 +353,7 @@ const Index = () => {
     return imageUrl !== "https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YnVzaW5lc3N8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=80";
   };
 
-  // Fixed Tesla image URL - ensure it's explicitly set
+  // Fixed Tesla image URL - ensure it's explicitly set and valid
   const teslaImageUrl = "https://images.unsplash.com/photo-1562775110-2e1e1dfcb5e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
 
   return (
@@ -444,11 +444,16 @@ const Index = () => {
                 className="my-10 flex justify-center"
               >
                 <div className="relative overflow-hidden rounded-lg shadow-md w-full max-w-3xl">
-                  <AspectRatio ratio={16/9} className="max-h-[300px]">
+                  <AspectRatio ratio={16/9}>
                     <img 
                       src={teslaImageUrl}
                       alt="Tesla's product"
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.onerror = null;
+                        console.log("Image failed to load:", teslaImageUrl);
+                        e.currentTarget.src = "https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
+                      }}
                     />
                   </AspectRatio>
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
@@ -520,7 +525,7 @@ const Index = () => {
             </motion.div>
           )}
           
-          {/* Company product image - only show if available, with fixed height */}
+          {/* Company product image - only show if available, with improved error handling */}
           {analysis.length > 0 && companyName && checkImageExists(companyName) && (
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
@@ -529,11 +534,16 @@ const Index = () => {
               className="mb-10 flex justify-center"
             >
               <div className="relative overflow-hidden rounded-lg shadow-md w-full max-w-3xl">
-                <AspectRatio ratio={16/9} className="max-h-[300px]">
+                <AspectRatio ratio={16/9}>
                   <img 
-                    src={getCompanyProductImage(companyName)} 
+                    src={getCompanyProductImage(companyName)}
                     alt={`${companyName}'s flagship product`}
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.onerror = null;
+                      console.log("Image failed to load:", getCompanyProductImage(companyName));
+                      e.currentTarget.style.display = "none";
+                    }}
                   />
                 </AspectRatio>
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
