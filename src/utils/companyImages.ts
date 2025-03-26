@@ -1,8 +1,8 @@
 
 // A mapping of company names to their product images
 const companyProductImages: Record<string, string> = {
-  "Tesla": "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
-  "Apple": "https://images.unsplash.com/photo-1621768216002-5ac171876625?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8aVBob25lfGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80",
+  "Tesla": "https://images.unsplash.com/photo-1562053342-7280b39e6 96c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+  "Apple": "https://images.unsplash.com/photo-1621768216002-5ac201876625?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8aVBob25lfGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80",
   "Microsoft": "https://images.unsplash.com/photo-1640552435936-5a6c5824e3c9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWljcm9zb2Z0JTIwc3VyZmFjZXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=1200&q=80",
   "Amazon": "https://images.unsplash.com/photo-1614398981229-f9662cc67e3c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8QW1hem9uJTIwYm94fGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80",
   "Google": "https://images.unsplash.com/photo-1611497368888-21b9b4a8da68?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8Z29vZ2xlJTIwcGl4ZWx8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=80",
