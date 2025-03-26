@@ -345,6 +345,16 @@ const Index = () => {
     return true;
   };
 
+  // Function to check if an image exists for a company
+  const checkImageExists = (companyName: string): boolean => {
+    const imageUrl = getCompanyProductImage(companyName);
+    // If the imageUrl is the fallback image, return false
+    return imageUrl !== "https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YnVzaW5lc3N8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=80";
+  };
+
+  // Fixed Tesla image URL
+  const teslaImageUrl = "https://images.unsplash.com/photo-1562775110-2e1e1dfcb5e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
+
   return (
     <motion.div 
       initial={{ opacity: 0 }}
@@ -424,6 +434,26 @@ const Index = () => {
                   Example Analysis: Tesla
                 </span>
               </div>
+              
+              {/* Tesla image in example section - fixed URL */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="my-12 flex justify-center"
+              >
+                <div className="relative overflow-hidden rounded-lg shadow-md max-w-3xl">
+                  <img 
+                    src={teslaImageUrl}
+                    alt="Tesla's product"
+                    className="w-full h-auto object-cover"
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                    <p className="text-white font-medium">Tesla's flagship product</p>
+                  </div>
+                </div>
+              </motion.div>
+              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {teslaExample.map((item, index) => (
                   <MarketAnalysisCard
@@ -442,31 +472,7 @@ const Index = () => {
                 )}
               </div>
               
-              {/* Show Tesla product image - making sure it renders properly */}
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-                className="my-12 flex justify-center"
-              >
-                <div className="relative overflow-hidden rounded-lg shadow-md max-w-3xl">
-                  <img 
-                    src="https://images.unsplash.com/photo-1562775110-2e1e1dfcb5e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-                    alt="Tesla's product"
-                    className="w-full h-auto object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.onerror = null;
-                      target.src = "https://images.unsplash.com/photo-1562775110-2e1e1dfcb5e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
-                    }}
-                  />
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <p className="text-white font-medium">Tesla's flagship product</p>
-                  </div>
-                </div>
-              </motion.div>
-              
-              {/* Show Tesla news as example */}
+              {/* Tesla news as example */}
               {newsArticles.length > 0 && !isLoadingNews && (
                 <NewsSection 
                   companyName="Tesla"
@@ -511,8 +517,8 @@ const Index = () => {
             </motion.div>
           )}
           
-          {/* Company product image - below the download buttons */}
-          {analysis.length > 0 && companyName && (
+          {/* Company product image - only show if available */}
+          {analysis.length > 0 && companyName && checkImageExists(companyName) && (
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -524,11 +530,6 @@ const Index = () => {
                   src={getCompanyProductImage(companyName)} 
                   alt={`${companyName}'s product or service`}
                   className="w-full h-auto object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.onerror = null;
-                    target.src = "https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
-                  }}
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
                   <p className="text-white font-medium">{companyName}'s flagship product</p>
