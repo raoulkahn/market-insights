@@ -37,8 +37,11 @@ serve(async (req) => {
     const { companyName } = await req.json();
     console.log('Analyzing company:', companyName);
 
+    // Normalize company name for comparison (case insensitive)
+    const normalizedCompanyName = companyName.toLowerCase().trim();
+    
     // Get appropriate competitor examples based on company industry
-    const competitorExamples = getCompetitorExamplesForIndustry(companyName);
+    const competitorExamples = getCompetitorExamplesForIndustry(normalizedCompanyName);
     
     const prompt = `Analyze the market for ${companyName}. Provide a detailed analysis including:
 1. Market Overview
@@ -83,7 +86,7 @@ Format the response as a JSON object with this structure:
   }]
 }
 
-CRITICAL: The "competitors" array MUST contain at least 3 competitors. Every business has competitors - there is no market without competition. For Instagram, TikTok MUST be included as the primary competitor, followed by Snapchat and others.`;
+CRITICAL: The "competitors" array MUST contain at least 3 competitors. Every business has competitors - there is no market without competition.`;
 
     console.log('Making request to OpenAI');
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -95,7 +98,7 @@ CRITICAL: The "competitors" array MUST contain at least 3 competitors. Every bus
       body: JSON.stringify({
         model: 'gpt-3.5-turbo',
         messages: [
-          { role: 'system', content: 'You are a market research analyst specializing in competitive analysis. Always respond with valid JSON that matches the requested structure exactly. Always include competitors for every analysis - no business exists without competitors. For social media platforms like Instagram, make sure to list TikTok as a key competitor. For Strava, list Nike Run Club as a competitor. Social media companies always have multiple competitors.' },
+          { role: 'system', content: 'You are a market research analyst specializing in competitive analysis. Always respond with valid JSON that matches the requested structure exactly. Always include competitors for every analysis - no business exists without competitors. For social media platforms like TikTok or Instagram, always include the other as a key competitor, along with Snapchat, YouTube, and similar platforms.' },
           { role: 'user', content: prompt }
         ],
         temperature: 0.7,
@@ -120,7 +123,6 @@ CRITICAL: The "competitors" array MUST contain at least 3 competitors. Every bus
     
     try {
       // Check if the response content starts with ```json, which indicates a code block formatting
-      // This is a common issue when OpenAI returns formatted JSON that needs to be extracted
       let parsedAnalysis;
       const analysisText = data.choices[0].message.content;
       console.log('Parsing response:', analysisText);
@@ -129,6 +131,21 @@ CRITICAL: The "competitors" array MUST contain at least 3 competitors. Every bus
       if (analysisText.trim().startsWith('```json')) {
         const jsonContent = analysisText.replace(/```json\n|\n```/g, '');
         parsedAnalysis = JSON.parse(jsonContent);
+      } else if (analysisText.includes('entryBarriers')) {
+        // Try to fix common JSON formatting errors
+        // Look for unquoted property values in an array that would cause parsing to fail
+        let fixedJson = analysisText;
+        
+        // Replace unquoted error strings like: ["Network effects", High competition", ...]
+        // Look for a pattern where there is a comma followed by a word without quotes
+        fixedJson = fixedJson.replace(/,\s*([A-Za-z][A-Za-z0-9 -]*")/g, ', "$1');
+        
+        try {
+          parsedAnalysis = JSON.parse(fixedJson);
+        } catch (innerParseError) {
+          console.error('Could not parse with simple fix:', innerParseError);
+          throw innerParseError; // rethrow to trigger default competitors generation
+        }
       } else {
         // Regular JSON parsing
         parsedAnalysis = JSON.parse(analysisText);
@@ -143,70 +160,13 @@ CRITICAL: The "competitors" array MUST contain at least 3 competitors. Every bus
       // If competitors field doesn't exist or is empty, create default competitors
       if (!parsedAnalysis.competitors || !Array.isArray(parsedAnalysis.competitors) || parsedAnalysis.competitors.length === 0) {
         console.log('No competitors found in response, generating default competitors');
-        parsedAnalysis.competitors = generateDefaultCompetitors(companyName);
+        parsedAnalysis.competitors = generateDefaultCompetitors(normalizedCompanyName);
       }
       
-      // Special case for Instagram and other social media companies
-      const lowercaseCompanyName = companyName.toLowerCase();
-      if (lowercaseCompanyName.includes('instagram') || 
-          lowercaseCompanyName.includes('facebook') || 
-          lowercaseCompanyName.includes('snapchat')) {
-        
-        // Check if TikTok is already included
-        const hasTikTok = parsedAnalysis.competitors.some(
-          (comp: any) => comp.name.toLowerCase().includes('tik') || comp.name.toLowerCase().includes('tiktok')
-        );
-        
-        if (!hasTikTok) {
-          console.log(`Adding TikTok as a competitor for ${companyName}`);
-          parsedAnalysis.competitors.unshift({
-            name: "TikTok",
-            marketShare: "~25% of social media market",
-            strengths: ["Short-form video content", "Advanced algorithm", "Growing user base"],
-            weaknesses: ["Limited content formats", "Privacy concerns", "Regulatory challenges"],
-            primaryMarkets: ["Global", "Particularly strong in Gen Z demographic"],
-            yearFounded: "2016"
-          });
-        }
-        
-        // Check if we have at least 3 competitors
-        if (parsedAnalysis.competitors.length < 3) {
-          console.log(`Adding more competitors for ${companyName} to reach at least 3`);
-          
-          // Add Snapchat if it's not already included
-          const hasSnapchat = parsedAnalysis.competitors.some(
-            (comp: any) => comp.name.toLowerCase().includes('snap')
-          );
-          
-          if (!hasSnapchat) {
-            parsedAnalysis.competitors.push({
-              name: "Snapchat",
-              marketShare: "~10% of social media market",
-              strengths: ["Ephemeral content", "AR features", "Young user base"],
-              weaknesses: ["Limited older demographic reach", "Profitability challenges", "Competition from Instagram Stories"],
-              primaryMarkets: ["North America", "Europe"],
-              yearFounded: "2011"
-            });
-          }
-          
-          // Add YouTube if not already included and we still need more competitors
-          if (parsedAnalysis.competitors.length < 3) {
-            const hasYouTube = parsedAnalysis.competitors.some(
-              (comp: any) => comp.name.toLowerCase().includes('youtube')
-            );
-            
-            if (!hasYouTube) {
-              parsedAnalysis.competitors.push({
-                name: "YouTube",
-                marketShare: "~30% of video content market",
-                strengths: ["Vast content library", "Creator monetization", "Google integration"],
-                weaknesses: ["Different content format", "Less focused on social networking", "Lower engagement rates than Instagram"],
-                primaryMarkets: ["Global"],
-                yearFounded: "2005"
-              });
-            }
-          }
-        }
+      // Special case for social media companies
+      if (isSocialMediaPlatform(normalizedCompanyName)) {
+        console.log(`Adding appropriate social media competitors for ${companyName}`);
+        parsedAnalysis.competitors = ensureSocialMediaCompetitors(normalizedCompanyName, parsedAnalysis.competitors);
       }
 
       console.log('Final response structure:', JSON.stringify({
@@ -239,8 +199,13 @@ CRITICAL: The "competitors" array MUST contain at least 3 competitors. Every bus
             }
           }
         ],
-        competitors: generateDefaultCompetitors(companyName)
+        competitors: generateDefaultCompetitors(normalizedCompanyName)
       };
+      
+      // For social media companies, ensure appropriate competitors
+      if (isSocialMediaPlatform(normalizedCompanyName)) {
+        defaultResponse.competitors = ensureSocialMediaCompetitors(normalizedCompanyName, defaultResponse.competitors);
+      }
       
       return new Response(
         JSON.stringify(defaultResponse), {
@@ -261,33 +226,118 @@ CRITICAL: The "competitors" array MUST contain at least 3 competitors. Every bus
   }
 });
 
-// Function to get competitor examples based on industry
-function getCompetitorExamplesForIndustry(companyName: string): string {
-  // Convert to lowercase for easier matching
-  const lowercaseName = companyName.toLowerCase();
+// Helper function to check if a company is a social media platform
+function isSocialMediaPlatform(companyName: string): boolean {
+  const socialMediaKeywords = ['instagram', 'tiktok', 'tik tok', 'facebook', 'snapchat', 'twitter', 'youtube', 'pinterest', 'linkedin'];
+  return socialMediaKeywords.some(keyword => companyName.includes(keyword));
+}
+
+// Function to ensure social media competitors are included for social media platforms
+function ensureSocialMediaCompetitors(companyName: string, existingCompetitors: any[]): any[] {
+  // Create a copy to avoid modifying the original array
+  let competitors = [...existingCompetitors];
   
-  if (lowercaseName.includes('instagram') || lowercaseName.includes('facebook') || 
-      lowercaseName.includes('tiktok') || lowercaseName.includes('snap')) {
-    return `For social media companies like ${companyName}, be sure to include competitors like TikTok, Instagram, Snapchat, YouTube, Pinterest, Twitter, and other social platforms. TikTok MUST be included as a key competitor for Instagram, and vice versa.`;
+  // Check if this is TikTok/Instagram and add the other as a competitor if not present
+  const isTikTok = companyName.includes('tiktok') || companyName.includes('tik tok');
+  const isInstagram = companyName.includes('instagram');
+  
+  // Convert competitor names to lowercase for case-insensitive comparison
+  const competitorNames = competitors.map(comp => comp.name.toLowerCase());
+  
+  if (isTikTok) {
+    // Add Instagram as a competitor for TikTok if not present
+    if (!competitorNames.some(name => name.includes('instagram'))) {
+      competitors.unshift({
+        name: "Instagram",
+        marketShare: "~25% of social media market",
+        strengths: ["Photo sharing", "Stories feature", "Integration with Facebook"],
+        weaknesses: ["Algorithm changes affecting reach", "Competition from TikTok", "Declining youth engagement"],
+        primaryMarkets: ["Global"],
+        yearFounded: "2010"
+      });
+    }
   }
   
-  if (lowercaseName.includes('amazon') || lowercaseName.includes('ebay') || 
-      lowercaseName.includes('etsy') || lowercaseName.includes('shopify')) {
+  if (isInstagram) {
+    // Add TikTok as a competitor for Instagram if not present
+    if (!competitorNames.some(name => name.includes('tiktok') || name.includes('tik tok'))) {
+      competitors.unshift({
+        name: "TikTok",
+        marketShare: "~25% of social media market",
+        strengths: ["Short-form video content", "Advanced algorithm", "Growing user base"],
+        weaknesses: ["Limited content formats", "Privacy concerns", "Regulatory challenges"],
+        primaryMarkets: ["Global", "Particularly strong in Gen Z demographic"],
+        yearFounded: "2016"
+      });
+    }
+  }
+  
+  // Ensure Snapchat is included for both platforms
+  if ((isTikTok || isInstagram) && !competitorNames.some(name => name.includes('snapchat'))) {
+    competitors.push({
+      name: "Snapchat",
+      marketShare: "~10% of social media market",
+      strengths: ["Ephemeral content", "AR features", "Young user base"],
+      weaknesses: ["Limited older demographic reach", "Profitability challenges", "Competition from Instagram Stories"],
+      primaryMarkets: ["North America", "Europe"],
+      yearFounded: "2011"
+    });
+  }
+  
+  // Ensure YouTube is included for both platforms
+  if ((isTikTok || isInstagram) && !competitorNames.some(name => name.includes('youtube'))) {
+    competitors.push({
+      name: "YouTube",
+      marketShare: "~30% of video content market",
+      strengths: ["Vast content library", "Creator monetization", "Google integration"],
+      weaknesses: ["Different content format", "Less focused on social networking", "Lower engagement rates than Instagram"],
+      primaryMarkets: ["Global"],
+      yearFounded: "2005"
+    });
+  }
+  
+  // Make sure we have at least 3 competitors
+  if (competitors.length < 3) {
+    if (!competitorNames.some(name => name.includes('pinterest'))) {
+      competitors.push({
+        name: "Pinterest",
+        marketShare: "~8% of social media market",
+        strengths: ["Visual discovery platform", "Shopping integrations", "Female demographic strength"],
+        weaknesses: ["Smaller user base", "Less social interaction", "Limited content formats"],
+        primaryMarkets: ["Global", "Female-focused demographic"],
+        yearFounded: "2010"
+      });
+    }
+  }
+  
+  return competitors;
+}
+
+// Function to get competitor examples based on industry
+function getCompetitorExamplesForIndustry(companyName: string): string {
+  if (isSocialMediaPlatform(companyName)) {
+    return `For social media companies like ${companyName}, be sure to include competitors like TikTok, Instagram, Snapchat, YouTube, Pinterest, Twitter, and other social platforms. 
+
+IMPORTANT: If the company is TikTok, then Instagram MUST be included as a key competitor. If the company is Instagram, then TikTok MUST be included as a key competitor.`;
+  }
+  
+  if (companyName.includes('amazon') || companyName.includes('ebay') || 
+      companyName.includes('etsy') || companyName.includes('shopify')) {
     return `For e-commerce companies like ${companyName}, be sure to include competitors like Amazon, eBay, Walmart, Etsy, Shopify, or other relevant platforms.`;
   }
   
-  if (lowercaseName.includes('bmw') || lowercaseName.includes('audi') || 
-      lowercaseName.includes('mercedes') || lowercaseName.includes('tesla')) {
+  if (companyName.includes('bmw') || companyName.includes('audi') || 
+      companyName.includes('mercedes') || companyName.includes('tesla')) {
     return `For automotive companies like ${companyName}, be sure to include competitors like BMW, Mercedes-Benz, Audi, Tesla, Toyota, or other relevant car manufacturers.`;
   }
   
-  if (lowercaseName.includes('nike') || lowercaseName.includes('adidas') || 
-      lowercaseName.includes('puma') || lowercaseName.includes('under armour')) {
+  if (companyName.includes('nike') || companyName.includes('adidas') || 
+      companyName.includes('puma') || companyName.includes('under armour')) {
     return `For sportswear companies like ${companyName}, be sure to include competitors like Nike, Adidas, Puma, Under Armour, New Balance, or other relevant brands.`;
   }
   
-  if (lowercaseName.includes('strava') || lowercaseName.includes('fitbit') || 
-      lowercaseName.includes('garmin') || lowercaseName.includes('fitness')) {
+  if (companyName.includes('strava') || companyName.includes('fitbit') || 
+      companyName.includes('garmin') || companyName.includes('fitness')) {
     return `For fitness tracking companies like ${companyName}, be sure to include competitors like Strava, Nike Run Club, Garmin Connect, MapMyRun, or other fitness platforms.`;
   }
   
@@ -304,10 +354,7 @@ function generateDefaultCompetitors(companyName: string): Array<{
   primaryMarkets: string[];
   yearFounded?: string;
 }> {
-  // Convert to lowercase for easier matching
-  const lowercaseName = companyName.toLowerCase();
-  
-  if (lowercaseName.includes('instagram')) {
+  if (companyName.includes('instagram')) {
     return [
       {
         name: "TikTok",
@@ -336,7 +383,36 @@ function generateDefaultCompetitors(companyName: string): Array<{
     ];
   }
   
-  if (lowercaseName.includes('strava')) {
+  if (companyName.includes('tiktok') || companyName.includes('tik tok')) {
+    return [
+      {
+        name: "Instagram",
+        marketShare: "~25% of social media market",
+        strengths: ["Photo sharing", "Stories feature", "Integration with Facebook"],
+        weaknesses: ["Algorithm changes affecting reach", "Competition from TikTok", "Declining youth engagement"],
+        primaryMarkets: ["Global"],
+        yearFounded: "2010"
+      },
+      {
+        name: "Snapchat",
+        marketShare: "~10% of social media market",
+        strengths: ["Ephemeral content", "AR features", "Young user base"],
+        weaknesses: ["Limited older demographic reach", "Profitability challenges", "Competition from Instagram Stories"],
+        primaryMarkets: ["North America", "Europe"],
+        yearFounded: "2011"
+      },
+      {
+        name: "YouTube Shorts",
+        marketShare: "~20% of short-form video market",
+        strengths: ["YouTube ecosystem integration", "Creator monetization", "Vast user base"],
+        weaknesses: ["Later market entry", "Less focus on short-form content", "Algorithm favoring longer videos"],
+        primaryMarkets: ["Global"],
+        yearFounded: "2020"
+      }
+    ];
+  }
+  
+  if (companyName.includes('strava')) {
     return [
       {
         name: "Nike Run Club",
@@ -365,7 +441,7 @@ function generateDefaultCompetitors(companyName: string): Array<{
     ];
   }
   
-  if (lowercaseName.includes('tesla')) {
+  if (companyName.includes('tesla')) {
     return [
       {
         name: "Volkswagen Group",
