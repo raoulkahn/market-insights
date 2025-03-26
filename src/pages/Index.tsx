@@ -346,7 +346,7 @@ const Index = () => {
     return true;
   };
 
-  // Updated Tesla image URL - correctly pointing to a Tesla Model S
+  // Updated Tesla image URL - check that it works correctly
   const teslaImageUrl = "https://images.unsplash.com/photo-1562053342-7280b39e696c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1200&q=80";
 
   // Better check if an image exists for a company
@@ -447,7 +447,7 @@ const Index = () => {
                   <AspectRatio ratio={16/9}>
                     <img 
                       src={teslaImageUrl}
-                      alt="Tesla Model Y - world's best-selling car"
+                      alt="Tesla Model S electric car"
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         e.currentTarget.onerror = null;
@@ -461,7 +461,7 @@ const Index = () => {
                     />
                   </AspectRatio>
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <p className="text-white font-medium">Tesla Model Y - world's best-selling car in 2024</p>
+                    <p className="text-white font-medium">Tesla Model S electric car</p>
                   </div>
                 </div>
               </motion.div>
