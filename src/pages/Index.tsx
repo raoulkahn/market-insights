@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import MarketAnalysisCard from "@/components/MarketAnalysisCard";
 import MarketAnalysisRadar from "@/components/MarketAnalysisRadar";
@@ -32,38 +33,43 @@ const Index = () => {
     publishedDate: string;
   }>>([]);
 
-  const spotifyExample = [
+  const teslaExample = [
     {
-      title: "Music Streaming Platform Market Analysis",
-      description: "Spotify operates in the highly competitive music streaming industry, where it has established itself as the global market leader. The company's success is driven by its strong recommendation algorithms, user-friendly interface, and extensive music library.",
+      title: "Electric Vehicle Market Analysis",
+      description: "Tesla operates in the rapidly growing electric vehicle industry, where it has established itself as the global market leader. The company's success is driven by its innovative technology, strong brand, and first-mover advantage in the premium EV segment.",
       marketData: {
-        targetUsers: ["Music Enthusiasts", "Casual Listeners", "Artists", "Podcast Creators", "Students"],
-        marketSize: "Global music streaming market valued at $29.45 billion in 2023, expected to grow at 14.7% CAGR",
-        entryBarriers: ["Music Licensing Costs", "Content Relationships", "Technical Infrastructure", "Network Effects"],
-        keyFeatures: ["Personalized Playlists", "Offline Mode", "Social Sharing", "Multi-platform Support", "Podcast Integration"]
+        targetUsers: ["Environmentally Conscious Consumers", "Tech Enthusiasts", "Luxury Car Buyers", "Early Adopters", "Corporate Fleets"],
+        marketSize: "Global electric vehicle market valued at $162.34 billion in 2020, expected to reach $802.81 billion by 2027 with a CAGR of 22.6%",
+        entryBarriers: ["Battery Technology", "Manufacturing Scale", "Charging Infrastructure", "Brand Recognition"],
+        keyFeatures: ["Long Battery Range", "Autonomous Driving", "Over-the-air Updates", "Supercharger Network", "Integrated Ecosystem"]
       }
     },
     {
       title: "Competitive Landscape Analysis",
-      description: "While Spotify leads the global market, it faces strong competition from tech giants like Apple Music, Amazon Music, and YouTube Music. Each competitor leverages their existing ecosystems and hardware integration advantages.",
+      description: "While Tesla leads the global EV market, it faces increasing competition from both traditional automakers like Volkswagen, GM, and Ford, as well as new entrants like Rivian, Lucid Motors, and NIO, all investing heavily in electric vehicle technology.",
       marketData: {
-        targetUsers: ["Premium Subscribers", "Free Tier Users", "Record Labels", "Independent Artists"],
-        marketSize: "Spotify commands approximately 30% of the global streaming market share",
-        entryBarriers: ["Brand Recognition", "User Data & Algorithms", "Industry Partnerships"],
-        keyFeatures: ["HiFi Audio Quality", "Collaborative Playlists", "Artist Analytics", "Cross-platform Sync"]
+        targetUsers: ["Individual Consumers", "Ride-sharing Companies", "Government Agencies", "Commercial Fleet Operators"],
+        marketSize: "Tesla commands approximately 14% of the global EV market share, with significant growth potential in emerging markets",
+        entryBarriers: ["Research & Development Costs", "Regulatory Compliance", "Supply Chain Complexity"],
+        keyFeatures: ["Premium Design", "Performance Specifications", "Software Integration", "Energy Efficiency"]
       }
     },
     {
       title: "Growth Opportunities Assessment",
-      description: "Spotify continues to expand beyond music into podcasts, audiobooks, and live audio experiences. The company is also focusing on emerging markets and creator tools to maintain its competitive edge.",
+      description: "Tesla continues to expand beyond passenger vehicles into energy generation and storage, autonomous driving technology, and robotics. The company is also focusing on vertical integration and manufacturing innovation to maintain its competitive edge.",
       marketData: {
-        targetUsers: ["Content Creators", "Advertisers", "Premium Family Users", "Car Users"],
-        marketSize: "Potential to reach 1 billion users by 2030 across all audio formats",
-        entryBarriers: ["Content Production Costs", "Creator Relationships", "Ad Technology"],
-        keyFeatures: ["Creator Tools", "Ad Targeting", "Live Audio Rooms", "Car Mode"]
+        targetUsers: ["Solar Power Customers", "Energy Storage Customers", "AI & Robotics Enthusiasts"],
+        marketSize: "Potential to expand into trillion-dollar energy and robotics markets by 2030",
+        entryBarriers: ["Technical Expertise", "Capital Requirements", "Established Competitors"],
+        keyFeatures: ["Solar Roof", "Powerwall", "Full Self-Driving", "Tesla Bot", "Gigafactory Scaling"]
       }
     }
   ];
+
+  // Fetch Tesla news on initial load
+  useEffect(() => {
+    fetchNewsArticles("Tesla");
+  }, []);
 
   const trackAnalysis = async (startTime: number) => {
     try {
@@ -388,7 +394,7 @@ const Index = () => {
                 type="text"
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
-                placeholder={!companyName ? "Enter company (e.g., OpenAI)" : ""}
+                placeholder={!companyName ? "Enter company (e.g., Tesla)" : ""}
                 className="w-full pl-12 pr-6 py-4 text-lg bg-white border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-400 transition-all duration-200"
                 disabled={isLoading}
               />
@@ -415,11 +421,11 @@ const Index = () => {
             >
               <div className="text-center mb-8">
                 <span className="px-6 py-2 bg-blue-50 text-blue-600 rounded-full text-sm font-medium shadow-sm">
-                  Example Analysis: Spotify
+                  Example Analysis: Tesla
                 </span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {spotifyExample.map((item, index) => (
+                {teslaExample.map((item, index) => (
                   <MarketAnalysisCard
                     key={index}
                     index={index}
@@ -428,13 +434,24 @@ const Index = () => {
                     marketData={item.marketData}
                   />
                 ))}
-                {spotifyExample.length > 0 && (
+                {teslaExample.length > 0 && (
                   <MarketAnalysisRadar
-                    marketData={spotifyExample[0].marketData}
-                    index={spotifyExample.length}
+                    marketData={teslaExample[0].marketData}
+                    index={teslaExample.length}
                   />
                 )}
               </div>
+              
+              {/* Show Tesla news as example */}
+              {newsArticles.length > 0 && !isLoadingNews && (
+                <NewsSection 
+                  companyName="Tesla"
+                  articles={newsArticles}
+                  isLoading={isLoadingNews}
+                />
+              )}
+              
+              {isLoadingNews && <LoadingDots />}
             </motion.div>
           </>
         )}
