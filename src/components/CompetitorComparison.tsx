@@ -19,8 +19,17 @@ interface CompetitorComparisonProps {
 }
 
 const CompetitorComparison = ({ companyName, competitors, isExample = false }: CompetitorComparisonProps) => {
+  // Enhanced debug logging to help troubleshoot
+  console.log(`CompetitorComparison rendering for: ${companyName}`);
+  console.log(`Competitors array length: ${competitors?.length || 0}`);
+  
+  if (competitors?.length > 0) {
+    console.log(`First competitor: ${competitors[0]?.name}`);
+  }
+
   // If there are no competitors, show modified content
-  if (!competitors.length) {
+  if (!competitors || competitors.length === 0) {
+    console.log(`No competitors found for ${companyName}, showing placeholder`);
     return (
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -71,9 +80,6 @@ const CompetitorComparison = ({ companyName, competitors, isExample = false }: C
       </motion.div>
     );
   }
-
-  // Debug log to help troubleshoot competitors data
-  console.log("CompetitorComparison - Company:", companyName, "Competitors:", competitors);
 
   return (
     <motion.div
@@ -255,6 +261,7 @@ const CompetitorComparison = ({ companyName, competitors, isExample = false }: C
                 </tr>
               </>
             ) : (
+              // Map through actual competitors
               competitors.map((competitor, index) => (
                 <tr key={index}>
                   <td className="px-6 py-4 whitespace-nowrap">
