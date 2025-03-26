@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
 import { Download, Search, RefreshCw, Image as ImageIcon } from "lucide-react";
 import { getCompanyProductImage } from "@/utils/companyImages";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
 
 const Index = () => {
   const [companyName, setCompanyName] = useState("");
@@ -352,7 +353,7 @@ const Index = () => {
     return imageUrl !== "https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YnVzaW5lc3N8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=80";
   };
 
-  // Fixed Tesla image URL
+  // Fixed Tesla image URL - ensure it's explicitly set
   const teslaImageUrl = "https://images.unsplash.com/photo-1562775110-2e1e1dfcb5e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
 
   return (
@@ -435,19 +436,21 @@ const Index = () => {
                 </span>
               </div>
               
-              {/* Tesla image in example section - fixed URL */}
+              {/* Tesla image in example section with fixed height */}
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2, duration: 0.5 }}
-                className="my-12 flex justify-center"
+                className="my-10 flex justify-center"
               >
-                <div className="relative overflow-hidden rounded-lg shadow-md max-w-3xl">
-                  <img 
-                    src={teslaImageUrl}
-                    alt="Tesla's product"
-                    className="w-full h-auto object-cover"
-                  />
+                <div className="relative overflow-hidden rounded-lg shadow-md w-full max-w-3xl">
+                  <AspectRatio ratio={16/9} className="max-h-[300px]">
+                    <img 
+                      src={teslaImageUrl}
+                      alt="Tesla's product"
+                      className="w-full h-full object-cover"
+                    />
+                  </AspectRatio>
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
                     <p className="text-white font-medium">Tesla's flagship product</p>
                   </div>
@@ -517,20 +520,22 @@ const Index = () => {
             </motion.div>
           )}
           
-          {/* Company product image - only show if available */}
+          {/* Company product image - only show if available, with fixed height */}
           {analysis.length > 0 && companyName && checkImageExists(companyName) && (
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: 0.5 }}
-              className="mb-12 flex justify-center"
+              className="mb-10 flex justify-center"
             >
-              <div className="relative overflow-hidden rounded-lg shadow-md max-w-3xl">
-                <img 
-                  src={getCompanyProductImage(companyName)} 
-                  alt={`${companyName}'s product or service`}
-                  className="w-full h-auto object-cover"
-                />
+              <div className="relative overflow-hidden rounded-lg shadow-md w-full max-w-3xl">
+                <AspectRatio ratio={16/9} className="max-h-[300px]">
+                  <img 
+                    src={getCompanyProductImage(companyName)} 
+                    alt={`${companyName}'s flagship product`}
+                    className="w-full h-full object-cover"
+                  />
+                </AspectRatio>
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
                   <p className="text-white font-medium">{companyName}'s flagship product</p>
                 </div>
