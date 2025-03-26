@@ -89,10 +89,10 @@ const CompetitorComparison = ({ companyName, competitors, isExample = false }: C
       className="w-full mb-12 bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
     >
       <div className="p-6 border-b border-gray-100">
-        <h3 className="text-xl font-semibold text-gray-900">Competitive Landscape Analysis</h3>
+        <h3 className="text-xl font-semibold text-gray-900">Competitive Landscape Comparison</h3>
         <p className="text-gray-600 mt-2">
-          Comparison of {companyName} with its main competitors in the market. This analysis highlights
-          relative strengths, weaknesses, and market positioning.
+          Detailed comparison of {companyName} with its main competitors in the market. This analysis highlights
+          relative strengths, weaknesses, and market positioning of each competitor.
         </p>
       </div>
       
