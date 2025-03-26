@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import MarketAnalysisCard from "@/components/MarketAnalysisCard";
 import MarketAnalysisRadar from "@/components/MarketAnalysisRadar";
 import LoadingDots from "@/components/LoadingDots";
+import NewsSection from "@/components/NewsSection";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
@@ -11,6 +12,7 @@ import { Download, Search, RefreshCw } from "lucide-react";
 const Index = () => {
   const [companyName, setCompanyName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingNews, setIsLoadingNews] = useState(false);
   const { toast } = useToast();
   const [analysis, setAnalysis] = useState<Array<{
     title: string;
@@ -21,6 +23,13 @@ const Index = () => {
       entryBarriers: string[];
       keyFeatures: string[];
     };
+  }>>([]);
+  const [newsArticles, setNewsArticles] = useState<Array<{
+    title: string;
+    description: string;
+    url: string;
+    source: string;
+    publishedDate: string;
   }>>([]);
 
   const spotifyExample = [
@@ -91,6 +100,26 @@ const Index = () => {
     }
   };
 
+  const fetchNewsArticles = async (company: string) => {
+    setIsLoadingNews(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('fetch-news', {
+        body: { companyName: company.trim() }
+      });
+      
+      if (error) {
+        throw new Error(error.message || 'Failed to fetch news');
+      }
+
+      setNewsArticles(data?.articles || []);
+    } catch (error) {
+      console.error('Error fetching news:', error);
+      setNewsArticles([]);
+    } finally {
+      setIsLoadingNews(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateCompanyName(companyName)) {
@@ -99,6 +128,7 @@ const Index = () => {
 
     setIsLoading(true);
     setAnalysis([]);
+    setNewsArticles([]);
     const startTime = Date.now();
 
     try {
@@ -117,6 +147,8 @@ const Index = () => {
 
       setAnalysis(data.analysis);
       await trackAnalysis(startTime);
+      
+      fetchNewsArticles(companyName);
       
       toast({
         title: "Analysis Complete",
@@ -276,6 +308,7 @@ const Index = () => {
   const handleReset = () => {
     setCompanyName("");
     setAnalysis([]);
+    setNewsArticles([]);
     toast({
       title: "Analysis Reset",
       description: "You can now analyze a different company.",
@@ -283,10 +316,8 @@ const Index = () => {
   };
 
   const validateCompanyName = (name: string): boolean => {
-    // Remove leading/trailing spaces
     const trimmedName = name.trim();
     
-    // Check if the input is empty
     if (trimmedName.length === 0) {
       toast({
         title: "Invalid Input",
@@ -296,9 +327,6 @@ const Index = () => {
       return false;
     }
 
-    // Allow company names that:
-    // - Are at least 2 characters OR
-    // - Contain at least one letter and one number (for cases like 3M)
     if (trimmedName.length < 2 && !/^(?=.*[a-zA-Z])(?=.*[0-9])/.test(trimmedName)) {
       toast({
         title: "Invalid Company Name",
@@ -460,6 +488,14 @@ const Index = () => {
                 />
               )}
             </div>
+          )}
+
+          {analysis.length > 0 && (
+            <NewsSection 
+              companyName={companyName}
+              articles={newsArticles}
+              isLoading={isLoadingNews}
+            />
           )}
         </div>
       </div>
