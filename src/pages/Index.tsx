@@ -35,7 +35,7 @@ const Index = () => {
     publishedDate: string;
   }>>([]);
 
-  // Add new state for competitors
+  // Updated to initialize with empty array rather than null
   const [competitors, setCompetitors] = useState<Array<{
     name: string;
     marketShare: string;
@@ -147,7 +147,7 @@ const Index = () => {
     setIsLoading(true);
     setAnalysis([]);
     setNewsArticles([]);
-    setCompetitors([]); // Reset competitors
+    setCompetitors([]); // Reset to empty array, not null
     const startTime = Date.now();
 
     try {
@@ -164,13 +164,13 @@ const Index = () => {
         throw new Error('Invalid response format from analysis');
       }
 
-      console.log("Complete API response:", data); // Add this to debug
+      console.log("Complete API response:", data);
       
       setAnalysis(data.analysis);
       
-      // Set competitors if they exist in the response
+      // Set competitors if they exist in the response, otherwise use empty array
       if (data.competitors && Array.isArray(data.competitors)) {
-        console.log("Competitors data:", data.competitors); // Add this to debug
+        console.log("Competitors data:", data.competitors);
         setCompetitors(data.competitors);
       } else {
         console.log("No competitors data found in response");
@@ -578,7 +578,7 @@ const Index = () => {
             </div>
           )}
 
-          {/* Add the competitor comparison section after analysis and before news */}
+          {/* Always show competitor comparison if we have analysis, even with empty competitors array */}
           {analysis.length > 0 && (
             <CompetitorComparison 
               companyName={companyName} 
