@@ -455,7 +455,11 @@ const Index = () => {
                     src={getCompanyProductImage("Tesla")} 
                     alt="Tesla's product"
                     className="w-full h-auto object-cover"
-                    onError={() => setImageError(true)}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.onerror = null;
+                      target.src = "https://images.unsplash.com/photo-1562775110-2e1e1dfcb5e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
+                    }}
                   />
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
                     <p className="text-white font-medium">Tesla's flagship product</p>
@@ -508,8 +512,8 @@ const Index = () => {
             </motion.div>
           )}
           
-          {/* Company product image - added below the download buttons */}
-          {analysis.length > 0 && companyName && !imageError && (
+          {/* Company product image - below the download buttons */}
+          {analysis.length > 0 && companyName && (
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -521,7 +525,11 @@ const Index = () => {
                   src={getCompanyProductImage(companyName)} 
                   alt={`${companyName}'s product or service`}
                   className="w-full h-auto object-cover"
-                  onError={() => setImageError(true)}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.onerror = null;
+                    target.src = "https://images.unsplash.com/photo-1507679799987-c73779587ccf?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80";
+                  }}
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
                   <p className="text-white font-medium">{companyName}'s flagship product</p>
