@@ -17,25 +17,9 @@ interface CompetitiveAnalysisCardProps {
 }
 
 const MarketAnalysisCard = ({ index, title, description, marketData }: CompetitiveAnalysisCardProps) => {
-  // Check if this is a competition analysis card using broader criteria
-  const isCompetitionAnalysis = 
-    title.toLowerCase().includes("competition") || 
-    title.toLowerCase().includes("competitive") ||
-    title.toLowerCase().includes("landscape") ||
-    title.toLowerCase().includes("overview") ||
-    title.toLowerCase().includes("market position") ||
-    description.toLowerCase().includes("competition") ||
-    description.toLowerCase().includes("competitor");
-  
-  // Check for specific company mentions
-  const lowerDescription = description.toLowerCase();
-  const isTikTokAnalysis = lowerDescription.includes("tik tok") || lowerDescription.includes("tiktok");
-  const isInstagramAnalysis = lowerDescription.includes("instagram");
-  
-  // Enhanced description with specific competitor names based on company
-  const enhancedDescription = isCompetitionAnalysis 
-    ? enhanceCompetitionDescription(description, isTikTokAnalysis, isInstagramAnalysis)
-    : description;
+  // Always enhance the description with competitor information regardless of title
+  // This ensures competition analysis is present for all companies
+  const enhancedDescription = enhanceCompetitionDescription(description, title);
 
   return (
     <motion.div
@@ -73,15 +57,146 @@ const MarketAnalysisCard = ({ index, title, description, marketData }: Competiti
   );
 };
 
-// Helper function to enhance competition description with specific competitor names
-const enhanceCompetitionDescription = (
-  description: string, 
-  isTikTokAnalysis: boolean, 
-  isInstagramAnalysis: boolean
-): string => {
-  let enhancedDesc = description;
+// Completely reimplemented competitor information function
+const enhanceCompetitionDescription = (description: string, title: string): string => {
+  const lowerDescription = description.toLowerCase();
+  const lowerTitle = title.toLowerCase();
   
-  // Generic patterns that indicate vague competitor references
+  // Don't modify if the description already contains specific competitor information
+  if (containsSpecificCompetitors(lowerDescription)) {
+    return description;
+  }
+  
+  // Add company-specific competitor information
+  if (isSocialMediaCompany(lowerDescription, lowerTitle)) {
+    if (containsCompany(lowerDescription, ['tiktok', 'tik tok'])) {
+      return addCompetitors(description, ["Instagram", "Snapchat", "YouTube", "Facebook"]);
+    } else if (containsCompany(lowerDescription, ['instagram'])) {
+      return addCompetitors(description, ["TikTok", "Snapchat", "Pinterest", "Facebook"]);
+    } else if (containsCompany(lowerDescription, ['facebook', 'meta'])) {
+      return addCompetitors(description, ["Instagram", "TikTok", "Snapchat", "YouTube"]);
+    } else if (containsCompany(lowerDescription, ['snapchat'])) {
+      return addCompetitors(description, ["Instagram", "TikTok", "BeReal", "Facebook"]);
+    } else if (containsCompany(lowerDescription, ['twitter', 'x'])) {
+      return addCompetitors(description, ["Facebook", "Instagram", "Threads", "Bluesky"]);
+    }
+  } else if (isAutomotiveCompany(lowerDescription, lowerTitle)) {
+    if (containsCompany(lowerDescription, ['bmw'])) {
+      return addCompetitors(description, ["Mercedes-Benz", "Audi", "Lexus", "Tesla"]);
+    } else if (containsCompany(lowerDescription, ['mercedes', 'mercedes-benz'])) {
+      return addCompetitors(description, ["BMW", "Audi", "Lexus", "Tesla"]);
+    } else if (containsCompany(lowerDescription, ['tesla'])) {
+      return addCompetitors(description, ["Volkswagen Group", "BYD", "Ford", "Rivian"]);
+    } else if (containsCompany(lowerDescription, ['toyota'])) {
+      return addCompetitors(description, ["Honda", "Volkswagen", "Ford", "Hyundai"]);
+    } else if (containsCompany(lowerDescription, ['ford'])) {
+      return addCompetitors(description, ["General Motors", "Toyota", "Volkswagen"]);
+    }
+  } else if (isTechCompany(lowerDescription, lowerTitle)) {
+    if (containsCompany(lowerDescription, ['apple'])) {
+      return addCompetitors(description, ["Samsung", "Microsoft", "Google", "Huawei"]);
+    } else if (containsCompany(lowerDescription, ['microsoft'])) {
+      return addCompetitors(description, ["Apple", "Google", "Amazon", "IBM"]);
+    } else if (containsCompany(lowerDescription, ['google'])) {
+      return addCompetitors(description, ["Apple", "Microsoft", "Amazon", "Meta"]);
+    } else if (containsCompany(lowerDescription, ['amazon'])) {
+      return addCompetitors(description, ["Walmart", "Alibaba", "Microsoft", "Google"]);
+    }
+  }
+  
+  // Generic default competitor enhancement for any other company
+  if (isCompetitionRelated(lowerTitle, lowerDescription)) {
+    return addGenericCompetitors(description);
+  }
+  
+  // For market position analysis or any other section, always add a competition reference
+  return ensureCompetitionMentioned(description);
+};
+
+// Helper function to check if the description already contains specific competitor information
+const containsSpecificCompetitors = (text: string): boolean => {
+  const specificCompanies = [
+    'instagram', 'snapchat', 'tiktok', 'facebook', 'youtube', 'twitter',
+    'mercedes', 'bmw', 'audi', 'tesla', 'toyota', 'volkswagen', 'ford',
+    'apple', 'google', 'microsoft', 'amazon'
+  ];
+  
+  // Return true if at least 2 specific companies are mentioned (this suggests competitors are already listed)
+  let count = 0;
+  for (const company of specificCompanies) {
+    if (text.includes(company)) {
+      count++;
+      if (count >= 2) return true;
+    }
+  }
+  
+  return false;
+};
+
+// Helper to determine if this is a social media company
+const isSocialMediaCompany = (description: string, title: string): boolean => {
+  const socialKeywords = ['social media', 'platform', 'network', 'photo sharing', 'video sharing', 'content creator'];
+  return socialKeywords.some(keyword => description.includes(keyword) || title.includes(keyword));
+};
+
+// Helper to determine if this is an automotive company
+const isAutomotiveCompany = (description: string, title: string): boolean => {
+  const autoKeywords = ['automotive', 'car', 'vehicle', 'automobile', 'automaker', 'manufacturer', 'electric vehicle', 'ev'];
+  return autoKeywords.some(keyword => description.includes(keyword) || title.includes(keyword));
+};
+
+// Helper to determine if this is a tech company
+const isTechCompany = (description: string, title: string): boolean => {
+  const techKeywords = ['tech', 'technology', 'software', 'hardware', 'electronics', 'digital', 'computer', 'smartphone'];
+  return techKeywords.some(keyword => description.includes(keyword) || title.includes(keyword));
+};
+
+// Helper to check if the text contains a specific company reference
+const containsCompany = (text: string, names: string[]): boolean => {
+  return names.some(name => text.includes(name));
+};
+
+// Helper to determine if this is a competition-related section
+const isCompetitionRelated = (title: string, description: string): boolean => {
+  const competitionTerms = [
+    'competition', 'competitive', 'market position', 'landscape', 'overview', 
+    'competitor', 'rival', 'market share', 'industry player'
+  ];
+  
+  return competitionTerms.some(term => 
+    title.includes(term) || description.includes(term)
+  );
+};
+
+// Add specific competitors to the description
+const addCompetitors = (description: string, competitors: string[]): string => {
+  const competitorText = competitors.join(", ");
+  
+  // Check for existing competition-related content
+  const competitionPattern = /([^.!?]*(?:competition|competitive|competitor|compete|rivalry|market position)[^.!?]*)[.!?]/i;
+  const match = description.match(competitionPattern);
+  
+  if (match) {
+    // Modify existing competition sentence
+    const sentence = match[0];
+    const modifiedSentence = sentence.replace(
+      /\.$/, 
+      " from major competitors like " + competitorText + "."
+    );
+    return description.replace(sentence, modifiedSentence);
+  } else {
+    // Add new competition sentence
+    if (description.endsWith(".")) {
+      return description + " It faces competition from major competitors like " + competitorText + ".";
+    } else {
+      return description + ". It faces competition from major competitors like " + competitorText + ".";
+    }
+  }
+};
+
+// Add generic competitor information
+const addGenericCompetitors = (description: string): string => {
+  // Replace vague competitor references with more specific language
   const vaguePhrases = [
     /\b(various|multiple|several|many|different) (social media platforms|platforms|competitors|companies|players|brands)\b/i,
     /\b(faces|experiencing|has|with) (competition|competitive pressure)\b/i,
@@ -89,135 +204,27 @@ const enhanceCompetitionDescription = (
     /\b(increasing|growing|significant|intense) competition\b/i
   ];
   
-  // More comprehensive patterns for improving detection
-  const competitionSentencePattern = /([^.!?]*(?:competition|competitive|competitor|compete)[^.!?]*)[.!?]/i;
-  
-  // TikTok specific enhancement
-  if (isTikTokAnalysis) {
-    const tiktokCompetitors = "major competitors like Instagram, Snapchat, YouTube, and Facebook";
-    
-    // First try to match vague phrases
-    for (const pattern of vaguePhrases) {
-      if (pattern.test(enhancedDesc)) {
-        enhancedDesc = enhancedDesc.replace(pattern, tiktokCompetitors);
-        return enhancedDesc;
-      }
-    }
-    
-    // Try to find a sentence mentioning competition
-    const match = enhancedDesc.match(competitionSentencePattern);
-    if (match) {
-      const sentence = match[0];
-      const modifiedSentence = sentence.replace(
-        /\.$/, 
-        " from " + tiktokCompetitors + "."
-      );
-      enhancedDesc = enhancedDesc.replace(sentence, modifiedSentence);
-      return enhancedDesc;
-    }
-    
-    // If no match was found but we know it's about TikTok, append competitor info
-    if (!enhancedDesc.includes("Instagram") && !enhancedDesc.includes("Snapchat")) {
-      if (enhancedDesc.endsWith(".")) {
-        enhancedDesc += " It competes with " + tiktokCompetitors + ".";
-      } else {
-        enhancedDesc += ". It competes with " + tiktokCompetitors + ".";
-      }
-      return enhancedDesc;
+  for (const pattern of vaguePhrases) {
+    if (pattern.test(description)) {
+      return description.replace(pattern, "key industry competitors");
     }
   }
   
-  // Instagram specific enhancement - improved to ensure it gets detected
-  if (isInstagramAnalysis) {
-    const instagramCompetitors = "major competitors like TikTok, Snapchat, YouTube, and Facebook";
-    
-    // First try to match vague phrases
-    for (const pattern of vaguePhrases) {
-      if (pattern.test(enhancedDesc)) {
-        enhancedDesc = enhancedDesc.replace(pattern, instagramCompetitors);
-        return enhancedDesc;
-      }
-    }
-    
-    // Try to find a sentence mentioning competition
-    const match = enhancedDesc.match(competitionSentencePattern);
-    if (match) {
-      const sentence = match[0];
-      const modifiedSentence = sentence.replace(
-        /\.$/,
-        " from " + instagramCompetitors + "."
-      );
-      enhancedDesc = enhancedDesc.replace(sentence, modifiedSentence);
-      return enhancedDesc;
-    }
-    
-    // If no match was found but we know it's about Instagram, append competitor info
-    if (!enhancedDesc.includes("TikTok") && !enhancedDesc.includes("Snapchat")) {
-      if (enhancedDesc.endsWith(".")) {
-        enhancedDesc += " It competes with " + instagramCompetitors + ".";
-      } else {
-        enhancedDesc += ". It competes with " + instagramCompetitors + ".";
-      }
-      return enhancedDesc;
+  return description;
+};
+
+// Ensure any description mentions competition
+const ensureCompetitionMentioned = (description: string): string => {
+  // Only add if no competition is mentioned
+  if (!/competition|competitive|competitor|compete|rivalry|market position/i.test(description)) {
+    if (description.endsWith(".")) {
+      return description + " The company operates in a competitive market with several established players.";
+    } else {
+      return description + ". The company operates in a competitive market with several established players.";
     }
   }
   
-  // For automotive companies
-  if (description.toLowerCase().includes("automotive") || 
-      description.toLowerCase().includes("automaker") || 
-      description.toLowerCase().includes("car manufacturer")) {
-    if (description.toLowerCase().includes("tesla")) {
-      const teslaCompetitors = "major competitors like Volkswagen Group, BYD, Ford, and Rivian";
-      
-      for (const pattern of vaguePhrases) {
-        if (pattern.test(enhancedDesc)) {
-          enhancedDesc = enhancedDesc.replace(pattern, teslaCompetitors);
-          return enhancedDesc;
-        }
-      }
-      
-      // Try to find a sentence about competition
-      const match = enhancedDesc.match(competitionSentencePattern);
-      if (match) {
-        const sentence = match[0];
-        const modifiedSentence = sentence.replace(/\.$/, " from " + teslaCompetitors + ".");
-        enhancedDesc = enhancedDesc.replace(sentence, modifiedSentence);
-        return enhancedDesc;
-      }
-    }
-    
-    if (description.toLowerCase().includes("ford")) {
-      const fordCompetitors = "major competitors like General Motors, Toyota, and Volkswagen";
-      
-      for (const pattern of vaguePhrases) {
-        if (pattern.test(enhancedDesc)) {
-          enhancedDesc = enhancedDesc.replace(pattern, fordCompetitors);
-          return enhancedDesc;
-        }
-      }
-      
-      // Try to find a sentence about competition
-      const match = enhancedDesc.match(competitionSentencePattern);
-      if (match) {
-        const sentence = match[0];
-        const modifiedSentence = sentence.replace(/\.$/, " from " + fordCompetitors + ".");
-        enhancedDesc = enhancedDesc.replace(sentence, modifiedSentence);
-        return enhancedDesc;
-      }
-    }
-  }
-  
-  // Generic enhancement for competition sections
-  if (enhancedDesc.toLowerCase().includes("competition") || enhancedDesc.toLowerCase().includes("competitive")) {
-    for (const pattern of vaguePhrases) {
-      if (pattern.test(enhancedDesc)) {
-        enhancedDesc = enhancedDesc.replace(pattern, "key industry competitors");
-        return enhancedDesc;
-      }
-    }
-  }
-  
-  return enhancedDesc;
+  return description;
 };
 
 export default MarketAnalysisCard;
