@@ -21,6 +21,12 @@ const companyProductImages: Record<string, string> = {
   "Coca-Cola": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTF8fGNvY2ElMjBjb2xhfGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80",
   "Nike": "https://images.unsplash.com/photo-1579298245158-33e8f568f7d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8bmlrZSUyMHNob2VzfGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80",
   "Adidas": "https://images.unsplash.com/photo-1582588678413-dbf45f4823e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGFkaWRhcyUyMHNob2VzfGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80",
+  "Ford": "https://images.unsplash.com/photo-1551830820-330a71b99659?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Zm9yZCUyMGNhcnxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+  "Toyota": "https://images.unsplash.com/photo-1559416523-140ddc3d238c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8dG95b3RhfGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80",
+  "Honda": "https://images.unsplash.com/photo-1633578636842-d4cd4798ce6b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aG9uZGElMjBjYXJ8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=80",
+  "BMW": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8Ym13fGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80",
+  "Mercedes": "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWVyY2VkZXMlMjBiZW56fGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80",
+  "Audi": "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YXVkaXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=1200&q=80"
 };
 
 // Fallback image for companies not in our list

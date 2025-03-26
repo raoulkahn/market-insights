@@ -163,10 +163,28 @@ CRITICAL: The "competitors" array MUST contain at least 3 competitors. Every bus
         parsedAnalysis.competitors = generateDefaultCompetitors(normalizedCompanyName);
       }
       
+      // Ensure we always have at least 3 competitors
+      if (parsedAnalysis.competitors.length < 3) {
+        console.log(`Only ${parsedAnalysis.competitors.length} competitors found, adding more to reach 3`);
+        const additionalCompetitors = generateDefaultCompetitors(normalizedCompanyName);
+        
+        // Add only enough competitors to reach 3 total
+        const needed = 3 - parsedAnalysis.competitors.length;
+        for (let i = 0; i < needed; i++) {
+          parsedAnalysis.competitors.push(additionalCompetitors[i]);
+        }
+      }
+      
       // Special case for social media companies - always ensure proper competitors
       if (isSocialMediaPlatform(normalizedCompanyName)) {
         console.log(`Adding appropriate social media competitors for ${companyName}`);
         parsedAnalysis.competitors = ensureSocialMediaCompetitors(normalizedCompanyName, parsedAnalysis.competitors);
+      }
+
+      // Special case for automotive companies
+      if (isAutomotiveCompany(normalizedCompanyName)) {
+        console.log(`Adding appropriate automotive competitors for ${companyName}`);
+        parsedAnalysis.competitors = ensureAutomotiveCompetitors(normalizedCompanyName, parsedAnalysis.competitors);
       }
 
       console.log('Final response structure:', JSON.stringify({
@@ -207,6 +225,11 @@ CRITICAL: The "competitors" array MUST contain at least 3 competitors. Every bus
         defaultResponse.competitors = ensureSocialMediaCompetitors(normalizedCompanyName, defaultResponse.competitors);
       }
       
+      // For automotive companies, ensure appropriate competitors
+      if (isAutomotiveCompany(normalizedCompanyName)) {
+        defaultResponse.competitors = ensureAutomotiveCompetitors(normalizedCompanyName, defaultResponse.competitors);
+      }
+      
       return new Response(
         JSON.stringify(defaultResponse), {
         status: 200,
@@ -218,7 +241,46 @@ CRITICAL: The "competitors" array MUST contain at least 3 competitors. Every bus
     return new Response(
       JSON.stringify({ 
         error: error.message,
-        details: error.stack 
+        details: error.stack,
+        // Always include default competitors in case of error
+        analysis: [
+          {
+            title: "Market Overview",
+            description: "General market analysis",
+            marketData: {
+              targetUsers: ["Consumers", "Businesses"],
+              marketSize: "Varies by sector",
+              entryBarriers: ["Competition", "Regulation"],
+              keyFeatures: ["Quality", "Service", "Innovation"]
+            }
+          }
+        ],
+        competitors: [
+          {
+            name: "Competitor A",
+            marketShare: "~20% estimated market share",
+            strengths: ["Brand recognition", "Product innovation", "Market presence"],
+            weaknesses: ["Higher pricing", "Limited market reach", "Narrower product range"],
+            primaryMarkets: ["Global markets"],
+            yearFounded: "2005"
+          },
+          {
+            name: "Competitor B",
+            marketShare: "~15% estimated market share",
+            strengths: ["Cost leadership", "Distribution network", "Customer loyalty"],
+            weaknesses: ["Less brand recognition", "Product quality issues", "Limited innovation"],
+            primaryMarkets: ["Regional focus"],
+            yearFounded: "2010"
+          },
+          {
+            name: "Competitor C",
+            marketShare: "~10% estimated market share",
+            strengths: ["Niche specialization", "Customer service", "Agile operations"],
+            weaknesses: ["Smaller scale", "Limited resources", "Narrower audience"],
+            primaryMarkets: ["Specialized segments"],
+            yearFounded: "2015"
+          }
+        ]
       }), {
       status: 200, // Return 200 to avoid Supabase error handling
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -230,6 +292,219 @@ CRITICAL: The "competitors" array MUST contain at least 3 competitors. Every bus
 function isSocialMediaPlatform(companyName: string): boolean {
   const socialMediaKeywords = ['instagram', 'tiktok', 'tik tok', 'facebook', 'snapchat', 'twitter', 'youtube', 'pinterest', 'linkedin'];
   return socialMediaKeywords.some(keyword => companyName.includes(keyword));
+}
+
+// Helper function to check if a company is an automotive company
+function isAutomotiveCompany(companyName: string): boolean {
+  const automotiveKeywords = ['ford', 'gm', 'general motors', 'toyota', 'honda', 'hyundai', 'kia', 'nissan', 'bmw', 'mercedes', 'audi', 'volkswagen', 'vw', 'tesla', 'subaru', 'mazda', 'lexus', 'acura', 'infiniti', 'lucid', 'rivian', 'ferrari', 'lamborghini', 'porsche', 'jeep', 'chrysler', 'dodge', 'ram', 'fiat', 'alfa romeo', 'maserati'];
+  return automotiveKeywords.some(keyword => companyName.includes(keyword));
+}
+
+// Function to ensure automotive competitors are included for automotive companies
+function ensureAutomotiveCompetitors(companyName: string, existingCompetitors: any[]): any[] {
+  // Create a copy to avoid modifying the original array
+  let competitors = [...existingCompetitors];
+  
+  // Convert competitor names to lowercase for case-insensitive comparison
+  const competitorNames = competitors.map(comp => comp.name.toLowerCase());
+  
+  // Identify which company we're dealing with
+  const isFord = companyName.includes('ford');
+  const isToyota = companyName.includes('toyota');
+  const isGM = companyName.includes('gm') || companyName.includes('general motors');
+  const isHonda = companyName.includes('honda');
+  const isBMW = companyName.includes('bmw');
+  
+  // Add Ford competitors if needed
+  if (isFord) {
+    if (!competitorNames.some(name => name.includes('toyota'))) {
+      competitors.unshift({
+        name: "Toyota",
+        marketShare: "~14% of global automotive market",
+        strengths: ["Reliability reputation", "Global manufacturing presence", "Strong hybrid vehicle lineup"],
+        weaknesses: ["Conservative styling", "Slower adoption of EVs", "Brand perceived as less exciting"],
+        primaryMarkets: ["Global"],
+        yearFounded: "1937"
+      });
+    }
+    
+    if (!competitorNames.some(name => name.includes('general') || name.includes('gm'))) {
+      competitors.unshift({
+        name: "General Motors",
+        marketShare: "~17% of global automotive market",
+        strengths: ["Diverse brand portfolio", "Strong truck lineup", "Electric vehicle investments"],
+        weaknesses: ["Brand perception issues", "Previous bankruptcy", "Legacy infrastructure costs"],
+        primaryMarkets: ["North America", "China", "South America"],
+        yearFounded: "1908"
+      });
+    }
+    
+    if (!competitorNames.some(name => name.includes('stellantis'))) {
+      competitors.push({
+        name: "Stellantis",
+        marketShare: "~12% of global automotive market",
+        strengths: ["Diverse brand portfolio", "European market strength", "SUV lineup"],
+        weaknesses: ["Brand integration challenges", "EV transition delays", "North American market share loss"],
+        primaryMarkets: ["Europe", "North America", "South America"],
+        yearFounded: "2021"
+      });
+    }
+  }
+  
+  // Add Toyota competitors if needed
+  if (isToyota) {
+    if (!competitorNames.some(name => name.includes('volkswagen') || name.includes('vw'))) {
+      competitors.unshift({
+        name: "Volkswagen Group",
+        marketShare: "~12% of global automotive market",
+        strengths: ["Brand portfolio spanning price points", "European market dominance", "EV investment"],
+        weaknesses: ["Emission scandal aftermath", "US market weakness", "Complex corporate structure"],
+        primaryMarkets: ["Europe", "China", "South America"],
+        yearFounded: "1937"
+      });
+    }
+    
+    if (!competitorNames.some(name => name.includes('honda'))) {
+      competitors.unshift({
+        name: "Honda",
+        marketShare: "~8% of global automotive market",
+        strengths: ["Engineering excellence", "Reliability reputation", "Efficient manufacturing"],
+        weaknesses: ["Limited luxury presence", "EV transition delays", "Limited SUV lineup"],
+        primaryMarkets: ["North America", "Asia", "Japan"],
+        yearFounded: "1948"
+      });
+    }
+    
+    if (!competitorNames.some(name => name.includes('ford'))) {
+      competitors.push({
+        name: "Ford",
+        marketShare: "~7% of global automotive market",
+        strengths: ["Truck market leadership", "Strong brand recognition", "Recent successful product launches"],
+        weaknesses: ["International market challenges", "Legacy cost structure", "Profitability in small vehicles"],
+        primaryMarkets: ["North America", "Europe"],
+        yearFounded: "1903"
+      });
+    }
+  }
+  
+  // Add GM competitors if needed
+  if (isGM) {
+    if (!competitorNames.some(name => name.includes('ford'))) {
+      competitors.unshift({
+        name: "Ford",
+        marketShare: "~7% of global automotive market",
+        strengths: ["Truck market leadership", "Strong brand recognition", "Recent successful product launches"],
+        weaknesses: ["International market challenges", "Legacy cost structure", "Profitability in small vehicles"],
+        primaryMarkets: ["North America", "Europe"],
+        yearFounded: "1903"
+      });
+    }
+    
+    if (!competitorNames.some(name => name.includes('toyota'))) {
+      competitors.unshift({
+        name: "Toyota",
+        marketShare: "~14% of global automotive market",
+        strengths: ["Reliability reputation", "Global manufacturing presence", "Strong hybrid vehicle lineup"],
+        weaknesses: ["Conservative styling", "Slower adoption of EVs", "Brand perceived as less exciting"],
+        primaryMarkets: ["Global"],
+        yearFounded: "1937"
+      });
+    }
+    
+    if (!competitorNames.some(name => name.includes('stellantis'))) {
+      competitors.push({
+        name: "Stellantis",
+        marketShare: "~12% of global automotive market",
+        strengths: ["Diverse brand portfolio", "European market strength", "SUV lineup"],
+        weaknesses: ["Brand integration challenges", "EV transition delays", "North American market share loss"],
+        primaryMarkets: ["Europe", "North America", "South America"],
+        yearFounded: "2021"
+      });
+    }
+  }
+  
+  // Add Honda competitors if needed
+  if (isHonda) {
+    if (!competitorNames.some(name => name.includes('toyota'))) {
+      competitors.unshift({
+        name: "Toyota",
+        marketShare: "~14% of global automotive market",
+        strengths: ["Reliability reputation", "Global manufacturing presence", "Strong hybrid vehicle lineup"],
+        weaknesses: ["Conservative styling", "Slower adoption of EVs", "Brand perceived as less exciting"],
+        primaryMarkets: ["Global"],
+        yearFounded: "1937"
+      });
+    }
+    
+    if (!competitorNames.some(name => name.includes('nissan'))) {
+      competitors.unshift({
+        name: "Nissan",
+        marketShare: "~6% of global automotive market",
+        strengths: ["Value pricing", "EV pioneer with Leaf", "Global manufacturing footprint"],
+        weaknesses: ["Brand perception issues", "Recent financial struggles", "Product lineup refresh delays"],
+        primaryMarkets: ["Japan", "North America", "Europe"],
+        yearFounded: "1933"
+      });
+    }
+    
+    if (!competitorNames.some(name => name.includes('hyundai') || name.includes('kia'))) {
+      competitors.push({
+        name: "Hyundai-Kia Automotive Group",
+        marketShare: "~8% of global automotive market",
+        strengths: ["Value proposition", "Warranty program", "Design improvements"],
+        weaknesses: ["Brand perception in luxury segments", "Lower resale value", "Past quality issues"],
+        primaryMarkets: ["Global"],
+        yearFounded: "1967/1944"
+      });
+    }
+  }
+  
+  // Add BMW competitors if needed
+  if (isBMW) {
+    if (!competitorNames.some(name => name.includes('mercedes'))) {
+      competitors.unshift({
+        name: "Mercedes-Benz",
+        marketShare: "~20% of luxury car market",
+        strengths: ["Brand prestige", "Leading technology", "Interior luxury"],
+        weaknesses: ["Higher maintenance costs", "Less sporty image than BMW", "Complex infotainment"],
+        primaryMarkets: ["Global luxury market"],
+        yearFounded: "1926"
+      });
+    }
+    
+    if (!competitorNames.some(name => name.includes('audi'))) {
+      competitors.unshift({
+        name: "Audi",
+        marketShare: "~15% of luxury car market",
+        strengths: ["Interior design", "Quattro all-wheel drive", "Technology integration"],
+        weaknesses: ["Brand prestige below Mercedes and BMW", "Reliability concerns", "VW Group parts sharing"],
+        primaryMarkets: ["Europe", "China", "North America"],
+        yearFounded: "1909"
+      });
+    }
+    
+    if (!competitorNames.some(name => name.includes('lexus'))) {
+      competitors.push({
+        name: "Lexus",
+        marketShare: "~12% of luxury car market",
+        strengths: ["Reliability", "Customer service", "Resale value"],
+        weaknesses: ["Less performance focus", "Conservative styling", "Smaller global presence"],
+        primaryMarkets: ["North America", "Japan", "Middle East"],
+        yearFounded: "1989"
+      });
+    }
+  }
+  
+  // Make sure we have at least 3 competitors
+  if (competitors.length < 3) {
+    const defaultCompetitors = generateDefaultCompetitors(companyName);
+    const needed = 3 - competitors.length;
+    for (let i = 0; i < needed; i++) {
+      competitors.push(defaultCompetitors[i]);
+    }
+  }
+  
+  return competitors;
 }
 
 // Function to ensure social media competitors are included for social media platforms
@@ -355,14 +630,15 @@ function getCompetitorExamplesForIndustry(companyName: string): string {
 IMPORTANT: If the company is TikTok, then Instagram MUST be included as a key competitor. If the company is Instagram, then TikTok MUST be included as a key competitor. If the company is Facebook, Instagram MUST be included as a key competitor.`;
   }
   
+  if (isAutomotiveCompany(companyName)) {
+    return `For automotive companies like ${companyName}, be sure to include direct competitors like Ford, GM, Toyota, Honda, Hyundai, Volkswagen, Tesla, or other relevant car manufacturers. 
+    
+IMPORTANT: If analyzing Ford, include GM and Toyota as competitors. If analyzing Toyota, include Honda and Volkswagen Group as competitors. For luxury brands like BMW, include Mercedes-Benz and Audi.`;
+  }
+  
   if (companyName.includes('amazon') || companyName.includes('ebay') || 
       companyName.includes('etsy') || companyName.includes('shopify')) {
     return `For e-commerce companies like ${companyName}, be sure to include competitors like Amazon, eBay, Walmart, Etsy, Shopify, or other relevant platforms.`;
-  }
-  
-  if (companyName.includes('bmw') || companyName.includes('audi') || 
-      companyName.includes('mercedes') || companyName.includes('tesla')) {
-    return `For automotive companies like ${companyName}, be sure to include competitors like BMW, Mercedes-Benz, Audi, Tesla, Toyota, or other relevant car manufacturers.`;
   }
   
   if (companyName.includes('nike') || companyName.includes('adidas') || 
@@ -529,6 +805,35 @@ function generateDefaultCompetitors(companyName: string): Array<{
         weaknesses: ["Production ramp challenges", "Financial sustainability"],
         primaryMarkets: ["North America"],
         yearFounded: "2009"
+      }
+    ];
+  }
+  
+  if (companyName.includes('ford')) {
+    return [
+      {
+        name: "General Motors",
+        marketShare: "~17% of global automotive market",
+        strengths: ["Diverse brand portfolio", "Strong truck lineup", "Electric vehicle investments"],
+        weaknesses: ["Brand perception issues", "Previous bankruptcy", "Legacy infrastructure costs"],
+        primaryMarkets: ["North America", "China", "South America"],
+        yearFounded: "1908"
+      },
+      {
+        name: "Toyota",
+        marketShare: "~14% of global automotive market",
+        strengths: ["Reliability reputation", "Global manufacturing presence", "Strong hybrid vehicle lineup"],
+        weaknesses: ["Conservative styling", "Slower adoption of EVs", "Brand perceived as less exciting"],
+        primaryMarkets: ["Global"],
+        yearFounded: "1937"
+      },
+      {
+        name: "Stellantis",
+        marketShare: "~12% of global automotive market",
+        strengths: ["Diverse brand portfolio", "European market strength", "SUV lineup"],
+        weaknesses: ["Brand integration challenges", "EV transition delays", "North American market share loss"],
+        primaryMarkets: ["Europe", "North America", "South America"],
+        yearFounded: "2021"
       }
     ];
   }
