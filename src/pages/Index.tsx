@@ -14,7 +14,6 @@ const Index = () => {
   const [companyName, setCompanyName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingNews, setIsLoadingNews] = useState(false);
-  const [imageError, setImageError] = useState(false);
   const { toast } = useToast();
   const [analysis, setAnalysis] = useState<Array<{
     title: string;
@@ -443,7 +442,7 @@ const Index = () => {
                 )}
               </div>
               
-              {/* Show Tesla product image */}
+              {/* Show Tesla product image - making sure it renders properly */}
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -452,7 +451,7 @@ const Index = () => {
               >
                 <div className="relative overflow-hidden rounded-lg shadow-md max-w-3xl">
                   <img 
-                    src={getCompanyProductImage("Tesla")} 
+                    src="https://images.unsplash.com/photo-1562775110-2e1e1dfcb5e6?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
                     alt="Tesla's product"
                     className="w-full h-auto object-cover"
                     onError={(e) => {
