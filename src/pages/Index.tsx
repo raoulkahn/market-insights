@@ -7,13 +7,14 @@ import NewsSection from "@/components/NewsSection";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
-import { Download, Search, RefreshCw } from "lucide-react";
+import { Download, Search, RefreshCw, Image as ImageIcon } from "lucide-react";
 import { getCompanyProductImage } from "@/utils/companyImages";
 
 const Index = () => {
   const [companyName, setCompanyName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingNews, setIsLoadingNews] = useState(false);
+  const [imageError, setImageError] = useState(false);
   const { toast } = useToast();
   const [analysis, setAnalysis] = useState<Array<{
     title: string;
@@ -442,13 +443,32 @@ const Index = () => {
                 )}
               </div>
               
+              {/* Show Tesla product image */}
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2, duration: 0.5 }}
+                className="my-12 flex justify-center"
+              >
+                <div className="relative overflow-hidden rounded-lg shadow-md max-w-3xl">
+                  <img 
+                    src={getCompanyProductImage("Tesla")} 
+                    alt="Tesla's product"
+                    className="w-full h-auto object-cover"
+                    onError={() => setImageError(true)}
+                  />
+                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                    <p className="text-white font-medium">Tesla's flagship product</p>
+                  </div>
+                </div>
+              </motion.div>
+              
               {/* Show Tesla news as example */}
               {newsArticles.length > 0 && !isLoadingNews && (
                 <NewsSection 
                   companyName="Tesla"
                   articles={newsArticles}
                   isLoading={isLoadingNews}
-                  companyImageUrl={getCompanyProductImage("Tesla")}
                 />
               )}
               
@@ -488,6 +508,28 @@ const Index = () => {
             </motion.div>
           )}
           
+          {/* Company product image - added below the download buttons */}
+          {analysis.length > 0 && companyName && !imageError && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="mb-12 flex justify-center"
+            >
+              <div className="relative overflow-hidden rounded-lg shadow-md max-w-3xl">
+                <img 
+                  src={getCompanyProductImage(companyName)} 
+                  alt={`${companyName}'s product or service`}
+                  className="w-full h-auto object-cover"
+                  onError={() => setImageError(true)}
+                />
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
+                  <p className="text-white font-medium">{companyName}'s flagship product</p>
+                </div>
+              </div>
+            </motion.div>
+          )}
+          
           {analysis.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {analysis.map((item, index) => (
@@ -513,7 +555,6 @@ const Index = () => {
               companyName={companyName}
               articles={newsArticles}
               isLoading={isLoadingNews}
-              companyImageUrl={companyName ? getCompanyProductImage(companyName) : undefined}
             />
           )}
         </div>

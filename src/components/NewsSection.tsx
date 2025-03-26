@@ -1,8 +1,8 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Newspaper, ExternalLink, Image as ImageIcon } from "lucide-react";
+import { Newspaper, ExternalLink } from "lucide-react";
 
 type NewsArticle = {
   title: string;
@@ -16,12 +16,9 @@ type NewsSectionProps = {
   companyName: string;
   articles: NewsArticle[];
   isLoading: boolean;
-  companyImageUrl?: string;
 };
 
-const NewsSection = ({ companyName, articles, isLoading, companyImageUrl }: NewsSectionProps) => {
-  const [imageError, setImageError] = useState(false);
-  
+const NewsSection = ({ companyName, articles, isLoading }: NewsSectionProps) => {
   if (isLoading) {
     return (
       <div className="mt-12 text-center">
@@ -46,27 +43,6 @@ const NewsSection = ({ companyName, articles, isLoading, companyImageUrl }: News
           Latest News for {companyName}
         </span>
       </div>
-      
-      {companyImageUrl && !imageError && (
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="mb-8 flex justify-center"
-        >
-          <div className="relative overflow-hidden rounded-lg shadow-md max-w-2xl">
-            <img 
-              src={companyImageUrl} 
-              alt={`${companyName}'s product or service`}
-              className="w-full h-auto object-cover"
-              onError={() => setImageError(true)}
-            />
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-              <p className="text-white font-medium">{companyName}'s flagship product</p>
-            </div>
-          </div>
-        </motion.div>
-      )}
       
       {(!articles || articles.length === 0) && !isLoading ? (
         <motion.div
