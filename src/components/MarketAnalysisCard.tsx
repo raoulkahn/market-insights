@@ -64,21 +64,22 @@ const MarketAnalysisCard = ({ index, title, description, marketData }: Competiti
 
 // Helper function to enhance competition description with specific competitor names
 const enhanceCompetitionDescription = (description: string): string => {
-  // Check for generic "various social media platforms" text
-  if (description.includes("various social media platforms")) {
-    // Social media competitors
-    if (description.toLowerCase().includes("instagram")) {
+  // Case-insensitive check for both "tik tok" and "tiktok" variations
+  if (description.toLowerCase().includes("tik tok") || description.toLowerCase().includes("tiktok")) {
+    if (description.includes("various social media platforms") || description.includes("multiple platforms")) {
       return description.replace(
-        "various social media platforms",
-        "major competitors like TikTok, Snapchat, YouTube, and Facebook"
+        /(various social media platforms|multiple platforms)/i,
+        "major competitors like Instagram, Snapchat, YouTube, and Facebook"
       );
     }
-    
-    // For TikTok
-    if (description.toLowerCase().includes("tiktok")) {
+  }
+  
+  // Instagram competitors check
+  if (description.toLowerCase().includes("instagram")) {
+    if (description.includes("various social media platforms") || description.includes("multiple platforms")) {
       return description.replace(
-        "various social media platforms",
-        "major competitors like Instagram, Snapchat, YouTube, and Facebook"
+        /(various social media platforms|multiple platforms)/i,
+        "major competitors like TikTok, Snapchat, YouTube, and Facebook"
       );
     }
   }
@@ -87,23 +88,23 @@ const enhanceCompetitionDescription = (description: string): string => {
   if (description.includes("various automakers") || description.includes("automotive industry")) {
     if (description.toLowerCase().includes("tesla")) {
       return description.replace(
-        /(various automakers|competition in the automotive industry)/,
+        /(various automakers|competition in the automotive industry)/i,
         "major competitors like Volkswagen Group, BYD, Ford, and Rivian"
       );
     }
     
     if (description.toLowerCase().includes("ford")) {
       return description.replace(
-        /(various automakers|competition in the automotive industry)/,
+        /(various automakers|competition in the automotive industry)/i,
         "major competitors like General Motors, Toyota, and Volkswagen"
       );
     }
   }
   
-  // Generic enhancement for competition sections that don't have specific replacements
-  if (description.includes("competition") && description.includes("various")) {
+  // Generic enhancement for competition sections with various or multiple descriptors
+  if (description.toLowerCase().includes("competition") || description.toLowerCase().includes("competitive")) {
     return description.replace(
-      /various (companies|platforms|competitors)/i,
+      /(various|multiple) (companies|platforms|competitors|players|brands)/i,
       "key industry competitors"
     );
   }
