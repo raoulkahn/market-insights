@@ -40,6 +40,10 @@ serve(async (req) => {
   try {
     const { companyName } = await req.json();
     
+    if (!companyName || typeof companyName !== 'string') {
+      throw new Error("Invalid or missing company name");
+    }
+    
     // Create a cache key based on the company name
     const cacheKey = `news_${companyName.toLowerCase()}`;
     

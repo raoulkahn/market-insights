@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import MarketAnalysisCard from "@/components/MarketAnalysisCard";
@@ -35,7 +36,7 @@ const Index = () => {
     publishedDate: string;
   }>>([]);
 
-  // Updated to initialize with empty array rather than null
+  // Updated to initialize with empty array
   const [competitors, setCompetitors] = useState<Array<{
     name: string;
     marketShare: string;
@@ -147,10 +148,11 @@ const Index = () => {
     setIsLoading(true);
     setAnalysis([]);
     setNewsArticles([]);
-    setCompetitors([]); // Reset to empty array, not null
+    setCompetitors([]); // Reset to empty array
     const startTime = Date.now();
 
     try {
+      console.log("Analyzing market for:", companyName);
       const { data, error } = await supabase.functions.invoke('analyze-market', {
         body: { companyName: companyName.trim() }
       });
@@ -168,12 +170,12 @@ const Index = () => {
       
       setAnalysis(data.analysis);
       
-      // Set competitors if they exist in the response, otherwise use empty array
+      // Always ensure competitors is an array
       if (data.competitors && Array.isArray(data.competitors)) {
         console.log("Competitors data:", data.competitors);
         setCompetitors(data.competitors);
       } else {
-        console.log("No competitors data found in response");
+        console.log("No competitors data or invalid format found in response");
         setCompetitors([]);
       }
       
@@ -578,12 +580,15 @@ const Index = () => {
             </div>
           )}
 
-          {/* Always show competitor comparison if we have analysis */}
+          {/* Always show competitor comparison after analysis */}
           {analysis.length > 0 && (
-            <CompetitorComparison 
-              companyName={companyName} 
-              competitors={competitors}
-            />
+            <div className="my-6">
+              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Competitor Analysis</h2>
+              <CompetitorComparison 
+                companyName={companyName} 
+                competitors={competitors}
+              />
+            </div>
           )}
 
           {analysis.length > 0 && (
