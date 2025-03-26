@@ -157,13 +157,13 @@ CRITICAL: The "competitors" array MUST contain at least 3 competitors. Every bus
         throw new Error('Response does not match expected format');
       }
 
-      // If competitors field doesn't exist or is empty, create default competitors
+      // If competitors field doesn't exist, is null, or is empty, create default competitors
       if (!parsedAnalysis.competitors || !Array.isArray(parsedAnalysis.competitors) || parsedAnalysis.competitors.length === 0) {
         console.log('No competitors found in response, generating default competitors');
         parsedAnalysis.competitors = generateDefaultCompetitors(normalizedCompanyName);
       }
       
-      // Special case for social media companies
+      // Special case for social media companies - always ensure proper competitors
       if (isSocialMediaPlatform(normalizedCompanyName)) {
         console.log(`Adding appropriate social media competitors for ${companyName}`);
         parsedAnalysis.competitors = ensureSocialMediaCompetitors(normalizedCompanyName, parsedAnalysis.competitors);
@@ -237,42 +237,65 @@ function ensureSocialMediaCompetitors(companyName: string, existingCompetitors: 
   // Create a copy to avoid modifying the original array
   let competitors = [...existingCompetitors];
   
-  // Check if this is TikTok/Instagram and add the other as a competitor if not present
-  const isTikTok = companyName.includes('tiktok') || companyName.includes('tik tok');
-  const isInstagram = companyName.includes('instagram');
-  
   // Convert competitor names to lowercase for case-insensitive comparison
   const competitorNames = competitors.map(comp => comp.name.toLowerCase());
   
-  if (isTikTok) {
-    // Add Instagram as a competitor for TikTok if not present
-    if (!competitorNames.some(name => name.includes('instagram'))) {
-      competitors.unshift({
-        name: "Instagram",
-        marketShare: "~25% of social media market",
-        strengths: ["Photo sharing", "Stories feature", "Integration with Facebook"],
-        weaknesses: ["Algorithm changes affecting reach", "Competition from TikTok", "Declining youth engagement"],
-        primaryMarkets: ["Global"],
-        yearFounded: "2010"
-      });
-    }
+  // Check if this is TikTok
+  const isTikTok = companyName.includes('tiktok') || companyName.includes('tik tok');
+  const isInstagram = companyName.includes('instagram');
+  const isFacebook = companyName.includes('facebook');
+  const isSnapchat = companyName.includes('snapchat');
+  const isYoutube = companyName.includes('youtube');
+  
+  // Add Instagram as a competitor for TikTok if not present
+  if (isTikTok && !competitorNames.some(name => name.includes('instagram'))) {
+    competitors.unshift({
+      name: "Instagram",
+      marketShare: "~25% of social media market",
+      strengths: ["Photo sharing", "Stories feature", "Integration with Facebook"],
+      weaknesses: ["Algorithm changes affecting reach", "Competition from TikTok", "Declining youth engagement"],
+      primaryMarkets: ["Global"],
+      yearFounded: "2010"
+    });
   }
   
-  if (isInstagram) {
-    // Add TikTok as a competitor for Instagram if not present
-    if (!competitorNames.some(name => name.includes('tiktok') || name.includes('tik tok'))) {
-      competitors.unshift({
-        name: "TikTok",
-        marketShare: "~25% of social media market",
-        strengths: ["Short-form video content", "Advanced algorithm", "Growing user base"],
-        weaknesses: ["Limited content formats", "Privacy concerns", "Regulatory challenges"],
-        primaryMarkets: ["Global", "Particularly strong in Gen Z demographic"],
-        yearFounded: "2016"
-      });
-    }
+  // Add TikTok as a competitor for Instagram if not present
+  if (isInstagram && !competitorNames.some(name => name.includes('tiktok') || name.includes('tik tok'))) {
+    competitors.unshift({
+      name: "TikTok",
+      marketShare: "~25% of social media market",
+      strengths: ["Short-form video content", "Advanced algorithm", "Growing user base"],
+      weaknesses: ["Limited content formats", "Privacy concerns", "Regulatory challenges"],
+      primaryMarkets: ["Global", "Particularly strong in Gen Z demographic"],
+      yearFounded: "2016"
+    });
   }
   
-  // Ensure Snapchat is included for both platforms
+  // Add Instagram as competitor for Facebook if not present
+  if (isFacebook && !competitorNames.some(name => name.includes('instagram'))) {
+    competitors.unshift({
+      name: "Instagram",
+      marketShare: "~25% of social media market",
+      strengths: ["Photo sharing", "Stories feature", "Visual content focus"],
+      weaknesses: ["Algorithm changes affecting reach", "Competition from TikTok", "Limited link sharing"],
+      primaryMarkets: ["Global"],
+      yearFounded: "2010"
+    });
+  }
+  
+  // Add Facebook as competitor for Instagram if not present
+  if (isInstagram && !competitorNames.some(name => name.includes('facebook'))) {
+    competitors.push({
+      name: "Facebook",
+      marketShare: "~30% of social media market",
+      strengths: ["Massive user base", "Advertising platform", "Business integration"],
+      weaknesses: ["Declining youth engagement", "Privacy concerns", "Platform fatigue"],
+      primaryMarkets: ["Global"],
+      yearFounded: "2004"
+    });
+  }
+  
+  // Ensure Snapchat is included for TikTok and Instagram
   if ((isTikTok || isInstagram) && !competitorNames.some(name => name.includes('snapchat'))) {
     competitors.push({
       name: "Snapchat",
@@ -284,13 +307,13 @@ function ensureSocialMediaCompetitors(companyName: string, existingCompetitors: 
     });
   }
   
-  // Ensure YouTube is included for both platforms
+  // Ensure YouTube is included for TikTok and Instagram
   if ((isTikTok || isInstagram) && !competitorNames.some(name => name.includes('youtube'))) {
     competitors.push({
       name: "YouTube",
       marketShare: "~30% of video content market",
       strengths: ["Vast content library", "Creator monetization", "Google integration"],
-      weaknesses: ["Different content format", "Less focused on social networking", "Lower engagement rates than Instagram"],
+      weaknesses: ["Different content format", "Less focused on social networking", "Lower engagement rates"],
       primaryMarkets: ["Global"],
       yearFounded: "2005"
     });
@@ -308,6 +331,17 @@ function ensureSocialMediaCompetitors(companyName: string, existingCompetitors: 
         yearFounded: "2010"
       });
     }
+    
+    if (competitors.length < 3 && !competitorNames.some(name => name.includes('twitter'))) {
+      competitors.push({
+        name: "Twitter",
+        marketShare: "~15% of social media market",
+        strengths: ["Real-time updates", "News sharing", "Public discussions"],
+        weaknesses: ["Character limits", "Moderation challenges", "Monetization issues"],
+        primaryMarkets: ["Global"],
+        yearFounded: "2006"
+      });
+    }
   }
   
   return competitors;
@@ -316,9 +350,9 @@ function ensureSocialMediaCompetitors(companyName: string, existingCompetitors: 
 // Function to get competitor examples based on industry
 function getCompetitorExamplesForIndustry(companyName: string): string {
   if (isSocialMediaPlatform(companyName)) {
-    return `For social media companies like ${companyName}, be sure to include competitors like TikTok, Instagram, Snapchat, YouTube, Pinterest, Twitter, and other social platforms. 
+    return `For social media companies like ${companyName}, be sure to include competitors like TikTok, Instagram, Snapchat, YouTube, Pinterest, Twitter, Facebook and other social platforms. 
 
-IMPORTANT: If the company is TikTok, then Instagram MUST be included as a key competitor. If the company is Instagram, then TikTok MUST be included as a key competitor.`;
+IMPORTANT: If the company is TikTok, then Instagram MUST be included as a key competitor. If the company is Instagram, then TikTok MUST be included as a key competitor. If the company is Facebook, Instagram MUST be included as a key competitor.`;
   }
   
   if (companyName.includes('amazon') || companyName.includes('ebay') || 
@@ -408,6 +442,35 @@ function generateDefaultCompetitors(companyName: string): Array<{
         weaknesses: ["Later market entry", "Less focus on short-form content", "Algorithm favoring longer videos"],
         primaryMarkets: ["Global"],
         yearFounded: "2020"
+      }
+    ];
+  }
+  
+  if (companyName.includes('facebook')) {
+    return [
+      {
+        name: "Instagram",
+        marketShare: "~25% of social media market",
+        strengths: ["Photo sharing", "Stories feature", "Visual content focus"],
+        weaknesses: ["Algorithm changes affecting reach", "Competition from TikTok", "Limited link sharing"],
+        primaryMarkets: ["Global"],
+        yearFounded: "2010"
+      },
+      {
+        name: "TikTok",
+        marketShare: "~25% of social media market",
+        strengths: ["Short-form video content", "Advanced algorithm", "Growing user base"],
+        weaknesses: ["Limited content formats", "Privacy concerns", "Regulatory challenges"],
+        primaryMarkets: ["Global", "Particularly strong in Gen Z demographic"],
+        yearFounded: "2016"
+      },
+      {
+        name: "YouTube",
+        marketShare: "~30% of video content market",
+        strengths: ["Vast content library", "Creator monetization", "Google integration"],
+        weaknesses: ["Different content format", "Less focused on social networking", "Lower engagement rates"],
+        primaryMarkets: ["Global"],
+        yearFounded: "2005"
       }
     ];
   }

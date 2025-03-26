@@ -578,7 +578,7 @@ const Index = () => {
             </div>
           )}
 
-          {/* Always show competitor comparison if we have analysis, even with empty competitors array */}
+          {/* Always show competitor comparison if we have analysis */}
           {analysis.length > 0 && (
             <CompetitorComparison 
               companyName={companyName} 
