@@ -48,6 +48,14 @@ For each section, include:
 - Entry barriers
 - Required key features
 
+Also, identify at least 3 key competitors for ${companyName}. For each competitor, include:
+- Their name
+- Approximate market share (can be an estimate)
+- 3 key strengths
+- 2-3 key weaknesses
+- Primary markets they operate in
+- Year founded (if significant)
+
 Format the response as a JSON object with this structure:
 {
   "analysis": [{
@@ -59,8 +67,18 @@ Format the response as a JSON object with this structure:
       "entryBarriers": string[],
       "keyFeatures": string[]
     }
+  }],
+  "competitors": [{
+    "name": string,
+    "marketShare": string,
+    "strengths": string[],
+    "weaknesses": string[],
+    "primaryMarkets": string[],
+    "yearFounded": string (optional)
   }]
-}`;
+}
+
+If no direct competitors exist, return an empty array for competitors.`;
 
     console.log('Making request to OpenAI');
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -100,9 +118,15 @@ Format the response as a JSON object with this structure:
       console.log('Parsing response:', analysisText);
       const parsedAnalysis = JSON.parse(analysisText);
       
+      // Validate the response structure
       if (!parsedAnalysis.analysis || !Array.isArray(parsedAnalysis.analysis)) {
         console.error('Invalid analysis format:', parsedAnalysis);
         throw new Error('Response does not match expected format');
+      }
+
+      // Ensure competitors field exists (even if empty)
+      if (!parsedAnalysis.competitors) {
+        parsedAnalysis.competitors = [];
       }
 
       return new Response(JSON.stringify(parsedAnalysis), {
