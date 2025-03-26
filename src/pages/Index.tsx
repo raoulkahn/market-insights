@@ -164,11 +164,17 @@ const Index = () => {
         throw new Error('Invalid response format from analysis');
       }
 
+      console.log("Complete API response:", data); // Add this to debug
+      
       setAnalysis(data.analysis);
       
       // Set competitors if they exist in the response
       if (data.competitors && Array.isArray(data.competitors)) {
+        console.log("Competitors data:", data.competitors); // Add this to debug
         setCompetitors(data.competitors);
+      } else {
+        console.log("No competitors data found in response");
+        setCompetitors([]);
       }
       
       await trackAnalysis(startTime);

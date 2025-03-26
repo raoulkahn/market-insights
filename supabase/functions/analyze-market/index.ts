@@ -129,6 +129,11 @@ If no direct competitors exist, return an empty array for competitors.`;
         parsedAnalysis.competitors = [];
       }
 
+      console.log('Final response structure:', JSON.stringify({
+        analysis: parsedAnalysis.analysis.length,
+        competitors: parsedAnalysis.competitors.length
+      }));
+
       return new Response(JSON.stringify(parsedAnalysis), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
