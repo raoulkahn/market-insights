@@ -26,7 +26,8 @@ const companyProductImages: Record<string, string> = {
   "Honda": "https://images.unsplash.com/photo-1633578636842-d4cd4798ce6b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8aG9uZGElMjBjYXJ8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=1200&q=80",
   "BMW": "https://images.unsplash.com/photo-1580273916550-e323be2ae537?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8Ym13fGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80",
   "Mercedes": "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8bWVyY2VkZXMlMjBiZW56fGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80",
-  "Audi": "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YXVkaXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=1200&q=80"
+  "Audi": "https://images.unsplash.com/photo-1603584173870-7f23fdae1b7a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8YXVkaXxlbnwwfHwwfHx8MA%3D%3D&auto=format&fit=crop&w=1200&q=80",
+  "Lexus": "https://images.unsplash.com/photo-1550355291-bbee04a92027?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGxleHVzfGVufDB8fDB8fHww&auto=format&fit=crop&w=1200&q=80"
 };
 
 // Fallback image for companies not in our list
@@ -41,7 +42,7 @@ export const getCompanyProductImage = (companyName: string): string => {
   if (!companyName) return fallbackImage;
   
   // Try to find an exact match first (case insensitive)
-  const normalizedCompanyName = companyName.toLowerCase();
+  const normalizedCompanyName = companyName.toLowerCase().trim();
   
   for (const [key, value] of Object.entries(companyProductImages)) {
     if (key.toLowerCase() === normalizedCompanyName) {

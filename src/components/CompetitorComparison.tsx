@@ -30,6 +30,7 @@ const CompetitorComparison = ({ companyName, competitors, isExample = false }: C
   }
 
   // Standardize competitors array to avoid null/undefined issues
+  // Always ensure we have at least 3 competitors
   const safeCompetitors = Array.isArray(competitors) && competitors.length > 0 ? competitors : [
     {
       name: "Competitor A",

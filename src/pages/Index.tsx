@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import MarketAnalysisCard from "@/components/MarketAnalysisCard";
@@ -36,7 +35,35 @@ const Index = () => {
     publishedDate: string;
   }>>([]);
 
-  // Updated to initialize with empty array
+  // Default competitors array - will be used if API doesn't return valid data
+  const defaultCompetitors = [
+    {
+      name: "Competitor A",
+      marketShare: "~20% estimated market share",
+      strengths: ["Brand recognition", "Product innovation", "Market presence"],
+      weaknesses: ["Higher pricing", "Limited market reach", "Narrower product range"],
+      primaryMarkets: ["Global markets"],
+      yearFounded: "2005"
+    },
+    {
+      name: "Competitor B",
+      marketShare: "~15% estimated market share",
+      strengths: ["Cost leadership", "Distribution network", "Customer loyalty"],
+      weaknesses: ["Less brand recognition", "Product quality issues", "Limited innovation"],
+      primaryMarkets: ["Regional focus"],
+      yearFounded: "2010"
+    },
+    {
+      name: "Competitor C",
+      marketShare: "~10% estimated market share",
+      strengths: ["Niche specialization", "Customer service", "Agile operations"],
+      weaknesses: ["Smaller scale", "Limited resources", "Narrower audience"],
+      primaryMarkets: ["Specialized segments"],
+      yearFounded: "2015"
+    }
+  ];
+
+  // Updated to initialize with the default competitors array
   const [competitors, setCompetitors] = useState<Array<{
     name: string;
     marketShare: string;
@@ -44,7 +71,7 @@ const Index = () => {
     weaknesses: string[];
     primaryMarkets: string[];
     yearFounded?: string;
-  }>>([]);
+  }>>(defaultCompetitors);
 
   const teslaExample = [
     {
@@ -76,6 +103,34 @@ const Index = () => {
         entryBarriers: ["Technical Expertise", "Capital Requirements", "Established Competitors"],
         keyFeatures: ["Solar Roof", "Powerwall", "Full Self-Driving", "Tesla Bot", "Gigafactory Scaling"]
       }
+    }
+  ];
+
+  // Example Tesla competitors data for the demo
+  const teslaCompetitors = [
+    {
+      name: "Volkswagen Group",
+      marketShare: "11% of global EV market",
+      strengths: ["Manufacturing scale", "Global distribution", "Brand portfolio"],
+      weaknesses: ["Legacy infrastructure", "Software capabilities"],
+      primaryMarkets: ["Europe", "China", "North America"],
+      yearFounded: "1937"
+    },
+    {
+      name: "BYD",
+      marketShare: "18% of global EV market",
+      strengths: ["Battery technology", "Cost leadership", "Vertical integration"],
+      weaknesses: ["Limited global presence", "Brand recognition outside Asia"],
+      primaryMarkets: ["China", "Asia-Pacific", "Emerging markets"],
+      yearFounded: "1995"
+    },
+    {
+      name: "Rivian",
+      marketShare: "1% of global EV market",
+      strengths: ["Specialized in EV trucks/SUVs", "Strong backing from investors", "Adventure-focused brand"],
+      weaknesses: ["Production ramp challenges", "Financial sustainability"],
+      primaryMarkets: ["North America"],
+      yearFounded: "2009"
     }
   ];
 
@@ -148,7 +203,7 @@ const Index = () => {
     setIsLoading(true);
     setAnalysis([]);
     setNewsArticles([]);
-    setCompetitors([]); // Reset to empty array
+    setCompetitors(defaultCompetitors); // Initialize with default competitors
     const startTime = Date.now();
 
     try {
@@ -170,39 +225,13 @@ const Index = () => {
       
       setAnalysis(data.analysis);
       
-      // Always ensure competitors is an array
-      if (data.competitors && Array.isArray(data.competitors)) {
+      // Always ensure competitors is populated, either from API or defaults
+      if (data.competitors && Array.isArray(data.competitors) && data.competitors.length > 0) {
         console.log("Competitors data:", data.competitors);
         setCompetitors(data.competitors);
       } else {
-        console.log("No competitors data or invalid format found in response");
-        // Set default competitors if none returned
-        setCompetitors([
-          {
-            name: "Competitor A",
-            marketShare: "~20% estimated market share",
-            strengths: ["Brand recognition", "Product innovation", "Market presence"],
-            weaknesses: ["Higher pricing", "Limited market reach", "Narrower product range"],
-            primaryMarkets: ["Global markets"],
-            yearFounded: "2005"
-          },
-          {
-            name: "Competitor B",
-            marketShare: "~15% estimated market share",
-            strengths: ["Cost leadership", "Distribution network", "Customer loyalty"],
-            weaknesses: ["Less brand recognition", "Product quality issues", "Limited innovation"],
-            primaryMarkets: ["Regional focus"],
-            yearFounded: "2010"
-          },
-          {
-            name: "Competitor C",
-            marketShare: "~10% estimated market share",
-            strengths: ["Niche specialization", "Customer service", "Agile operations"],
-            weaknesses: ["Smaller scale", "Limited resources", "Narrower audience"],
-            primaryMarkets: ["Specialized segments"],
-            yearFounded: "2015"
-          }
-        ]);
+        console.log("No competitors data or invalid format found in response, using defaults");
+        // We're already initialized with defaultCompetitors, but log for clarity
       }
       
       await trackAnalysis(startTime);
@@ -222,33 +251,7 @@ const Index = () => {
         duration: 5000,
       });
 
-      // Ensure default competitors are set even on error
-      setCompetitors([
-        {
-          name: "Competitor A",
-          marketShare: "~20% estimated market share",
-          strengths: ["Brand recognition", "Product innovation", "Market presence"],
-          weaknesses: ["Higher pricing", "Limited market reach", "Narrower product range"],
-          primaryMarkets: ["Global markets"],
-          yearFounded: "2005"
-        },
-        {
-          name: "Competitor B",
-          marketShare: "~15% estimated market share",
-          strengths: ["Cost leadership", "Distribution network", "Customer loyalty"],
-          weaknesses: ["Less brand recognition", "Product quality issues", "Limited innovation"],
-          primaryMarkets: ["Regional focus"],
-          yearFounded: "2010"
-        },
-        {
-          name: "Competitor C",
-          marketShare: "~10% estimated market share",
-          strengths: ["Niche specialization", "Customer service", "Agile operations"],
-          weaknesses: ["Smaller scale", "Limited resources", "Narrower audience"],
-          primaryMarkets: ["Specialized segments"],
-          yearFounded: "2015"
-        }
-      ]);
+      // We're already initialized with defaultCompetitors
     } finally {
       setIsLoading(false);
     }
@@ -396,6 +399,7 @@ const Index = () => {
     setCompanyName("");
     setAnalysis([]);
     setNewsArticles([]);
+    setCompetitors(defaultCompetitors); // Reset to default competitors
     toast({
       title: "Analysis Reset",
       description: "You can now analyze a different company.",
@@ -634,7 +638,7 @@ const Index = () => {
             </div>
           )}
 
-          {/* Always show competitor comparison after analysis */}
+          {/* ALWAYS show competitor comparison after analysis */}
           {analysis.length > 0 && (
             <div className="my-6">
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">Competitor Analysis</h2>
