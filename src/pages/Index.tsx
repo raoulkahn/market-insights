@@ -7,7 +7,7 @@ import NewsSection from "@/components/NewsSection";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import jsPDF from "jspdf";
-import { Download, Search, RefreshCw, Image as ImageIcon } from "lucide-react";
+import { Download, Search, RefreshCw } from "lucide-react";
 import { getCompanyProductImage } from "@/utils/companyImages";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 
@@ -436,36 +436,6 @@ const Index = () => {
                 </span>
               </div>
               
-              {/* Tesla image in example section */}
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2, duration: 0.5 }}
-                className="my-10 flex justify-center"
-              >
-                <div className="relative overflow-hidden rounded-lg shadow-md w-full max-w-3xl">
-                  <AspectRatio ratio={16/9}>
-                    <img 
-                      src={teslaImageUrl}
-                      alt="Tesla Model S electric car"
-                      className="w-full h-full object-cover"
-                      onError={(e) => {
-                        e.currentTarget.onerror = null;
-                        console.error("Tesla image failed to load:", teslaImageUrl);
-                        // Find the closest parent element and hide it if image fails
-                        const container = e.currentTarget.closest('.relative');
-                        if (container) {
-                          container.classList.add('hidden');
-                        }
-                      }}
-                    />
-                  </AspectRatio>
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                    <p className="text-white font-medium">Tesla Model S electric car</p>
-                  </div>
-                </div>
-              </motion.div>
-              
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {teslaExample.map((item, index) => (
                   <MarketAnalysisCard
@@ -526,38 +496,6 @@ const Index = () => {
                 <RefreshCw size={20} />
                 New Analysis
               </motion.button>
-            </motion.div>
-          )}
-          
-          {/* Company product image - only show if available, with robust error handling */}
-          {analysis.length > 0 && companyName && checkImageExists(companyName) && (
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-              className="mb-10 flex justify-center"
-            >
-              <div className="relative overflow-hidden rounded-lg shadow-md w-full max-w-3xl">
-                <AspectRatio ratio={16/9}>
-                  <img 
-                    src={getCompanyProductImage(companyName)}
-                    alt={`${companyName}'s flagship product`}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.onerror = null;
-                      console.error("Company image failed to load:", getCompanyProductImage(companyName));
-                      // Find closest parent with relative class and hide it
-                      const container = e.currentTarget.closest('.relative');
-                      if (container) {
-                        container.classList.add('hidden');
-                      }
-                    }}
-                  />
-                </AspectRatio>
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4">
-                  <p className="text-white font-medium">{companyName}'s flagship product</p>
-                </div>
-              </div>
             </motion.div>
           )}
           
